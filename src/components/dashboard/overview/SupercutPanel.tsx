@@ -7,17 +7,21 @@ interface SupercutPanelProps {
 }
 
 export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
-  const [state, setState] = useState<'preparing' | 'loading' | 'ready'>('preparing');
-  const [videoUrl, setVideoUrl] = useState<string>('');
+  const [state, setState] = useState<"preparing" | "loading" | "ready">(
+    "preparing"
+  );
+  const [videoUrl, setVideoUrl] = useState<string>("");
 
   useEffect(() => {
     const prepTimer = setTimeout(() => {
-      setState('loading');
+      setState("loading");
 
       // Simulate video generation/loading
       const loadTimer = setTimeout(() => {
-        setVideoUrl('https://player.cloudinary.com/embed/?cloud_name=diqe550vg&public_id=Actual_2_ddoofi&profile=cld-default');
-        setState('ready');
+        setVideoUrl(
+          "https://player.cloudinary.com/embed/?cloud_name=diqe550vg&public_id=Actual_2_ddoofi&profile=cld-default"
+        );
+        setState("ready");
       }, 2000);
 
       return () => clearTimeout(loadTimer);
@@ -26,21 +30,22 @@ export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
     return () => clearTimeout(prepTimer);
   }, [delayMs]);
 
-  if (state === 'preparing') {
+  if (state === "preparing") {
     return null;
   }
 
-  if (state === 'loading') {
+  if (state === "loading") {
     return (
       <Card className="glass p-6">
         <div className="flex items-center justify-center gap-3 text-muted-foreground">
           <Loader2 className="h-5 w-5 animate-spin" />
-          <p className="text-sm">Creating a 20-second supercut of your day's highlights...</p>
+          <p className="text-sm">
+            Creating a 20-second supercut of your day's highlights...
+          </p>
         </div>
       </Card>
     );
   }
-
   return (
     <Card className="glass p-6">
       <div className="space-y-4">
@@ -49,14 +54,27 @@ export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
           <h3 className="text-lg font-semibold">Supercut of Today</h3>
         </div>
 
-        <div className="relative rounded-xl overflow-hidden bg-muted shadow-lg mx-auto" style={{ aspectRatio: '9/16', maxWidth: '600px', width: '100%' }}>
+        <div
+          className="relative rounded-xl overflow-hidden bg-black shadow-lg mx-auto"
+          style={{
+            aspectRatio: "9/16",
+            maxWidth: "350px", // smaller player
+            width: "100%",
+          }}
+        >
           {videoUrl ? (
-            <iframe
-              src={videoUrl}
-              className="w-full h-full"
-              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-              allowFullScreen
-            />
+            <div className="absolute inset-0 overflow-hidden">
+              <iframe
+                src={videoUrl}
+                className="absolute top-1/2 left-1/2 w-[135%] h-[135%] -translate-x-1/2 -translate-y-1/2 scale-[1.35]"
+                style={{
+                  border: "none",
+                  transform: "translate(-50%, -50%) scale(1.35)",
+                }}
+                allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           ) : (
             <div className="flex items-center justify-center h-full">
               <div className="flex flex-col items-center gap-3 text-muted-foreground">
