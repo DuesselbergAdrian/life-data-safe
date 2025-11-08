@@ -32,40 +32,40 @@ export const DataUnificationAnimation = () => {
       id: 'oura', 
       icon: Circle, 
       color: 'bg-blue-600',
-      startX: 15,
-      startY: 10,
+      startX: 5,
+      startY: 5,
       name: 'Oura'
     },
     { 
       id: 'excel', 
       icon: FileSpreadsheet, 
       color: 'bg-green-600',
-      startX: 85,
-      startY: 10,
+      startX: 95,
+      startY: 5,
       name: 'Excel'
     },
     { 
       id: 'health', 
       icon: Heart, 
       color: 'bg-red-500',
-      startX: 10,
-      startY: 75,
+      startX: 0,
+      startY: 85,
       name: 'Apple Health'
     },
     { 
       id: 'whoop', 
       icon: Activity, 
       color: 'bg-gray-900',
-      startX: 35,
-      startY: 80,
+      startX: 30,
+      startY: 95,
       name: 'Whoop'
     },
     { 
       id: 'strava', 
       icon: TrendingUp, 
       color: 'bg-orange-500',
-      startX: 90,
-      startY: 75,
+      startX: 100,
+      startY: 85,
       name: 'Strava'
     },
   ];
