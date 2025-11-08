@@ -49,6 +49,8 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
   const [socialConsents, setSocialConsents] = useState({
     share_communities: false,
     share_private_circle: false,
+    share_community_memberships: false,
+    share_circle_connections: false,
   });
   const { toast } = useToast();
 
@@ -109,7 +111,7 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
     
     const { data, error } = await supabase
       .from("consents")
-      .select("share_communities, share_private_circle")
+      .select("share_communities, share_private_circle, share_community_memberships, share_circle_connections")
       .eq("user_id", userId)
       .single();
 
@@ -117,11 +119,13 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
       setSocialConsents({
         share_communities: data.share_communities,
         share_private_circle: data.share_private_circle,
+        share_community_memberships: data.share_community_memberships,
+        share_circle_connections: data.share_circle_connections,
       });
     }
   };
 
-  const handleToggleSocialConsent = async (field: 'share_communities' | 'share_private_circle') => {
+  const handleToggleSocialConsent = async (field: 'share_communities' | 'share_private_circle' | 'share_community_memberships' | 'share_circle_connections') => {
     if (!userId) return;
     
     const newValue = !socialConsents[field];
@@ -134,12 +138,19 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
     if (!error) {
       setSocialConsents(prev => ({ ...prev, [field]: newValue }));
       
+      const sharingTypeMap = {
+        share_communities: 'health data with communities',
+        share_private_circle: 'health data with inner circle',
+        share_community_memberships: 'community memberships',
+        share_circle_connections: 'inner circle connections'
+      };
+      
       await supabase.from("audit_logs").insert({
         user_id: userId,
         action: newValue ? "SOCIAL_SHARING_ENABLE" : "SOCIAL_SHARING_DISABLE",
         scope: "social_sharing",
         details: { 
-          sharing_type: field === 'share_communities' ? 'communities' : 'inner_circle',
+          sharing_type: sharingTypeMap[field],
           enabled: newValue
         }
       });
@@ -148,7 +159,7 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
       
       toast({
         title: newValue ? "Sharing enabled" : "Sharing disabled",
-        description: `Your data ${newValue ? 'is now' : 'is no longer'} shared with ${field === 'share_communities' ? 'communities' : 'your inner circle'}`,
+        description: `You ${newValue ? 'now share' : 'no longer share'} ${sharingTypeMap[field]}`,
       });
     }
   };
@@ -289,7 +300,7 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
                   <Users className="h-4 w-4 text-primary" />
-                  <h4 className="font-medium text-sm">Communities</h4>
+                  <h4 className="font-medium text-sm">Share Health Data with Communities</h4>
                   {socialConsents.share_communities && (
                     <Badge variant="default" className="flex items-center gap-1 text-xs">
                       <CheckCircle className="h-3 w-3" />
@@ -312,8 +323,32 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
             <div className="flex items-start justify-between">
               <div className="flex-1">
                 <div className="flex items-center gap-3 mb-2">
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <h4 className="font-medium text-sm">Share Community Memberships</h4>
+                  {socialConsents.share_community_memberships && (
+                    <Badge variant="default" className="flex items-center gap-1 text-xs">
+                      <CheckCircle className="h-3 w-3" />
+                      Enabled
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Allow others to see which communities you're part of. This makes data more useful for research and social connections.
+                </p>
+              </div>
+              <Switch 
+                checked={socialConsents.share_community_memberships}
+                onCheckedChange={() => handleToggleSocialConsent('share_community_memberships')}
+              />
+            </div>
+          </div>
+
+          <div className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
                   <UserCircle className="h-4 w-4 text-primary" />
-                  <h4 className="font-medium text-sm">Inner Circle</h4>
+                  <h4 className="font-medium text-sm">Share Health Data with Inner Circle</h4>
                   {socialConsents.share_private_circle && (
                     <Badge variant="default" className="flex items-center gap-1 text-xs">
                       <CheckCircle className="h-3 w-3" />
@@ -328,6 +363,30 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
               <Switch 
                 checked={socialConsents.share_private_circle}
                 onCheckedChange={() => handleToggleSocialConsent('share_private_circle')}
+              />
+            </div>
+          </div>
+
+          <div className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <UserCircle className="h-4 w-4 text-muted-foreground" />
+                  <h4 className="font-medium text-sm">Share Inner Circle Connections</h4>
+                  {socialConsents.share_circle_connections && (
+                    <Badge variant="default" className="flex items-center gap-1 text-xs">
+                      <CheckCircle className="h-3 w-3" />
+                      Enabled
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Allow others to see who is in your inner circle. This enriches social graph data for better insights and connections.
+                </p>
+              </div>
+              <Switch 
+                checked={socialConsents.share_circle_connections}
+                onCheckedChange={() => handleToggleSocialConsent('share_circle_connections')}
               />
             </div>
           </div>

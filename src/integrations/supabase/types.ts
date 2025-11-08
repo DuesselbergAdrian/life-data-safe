@@ -86,7 +86,9 @@ export type Database = {
           created_at: string | null
           id: string
           share_anonymized: boolean
+          share_circle_connections: boolean | null
           share_communities: boolean
+          share_community_memberships: boolean | null
           share_private_circle: boolean
           updated_at: string
           user_id: string
@@ -97,7 +99,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           share_anonymized?: boolean
+          share_circle_connections?: boolean | null
           share_communities?: boolean
+          share_community_memberships?: boolean | null
           share_private_circle?: boolean
           updated_at?: string
           user_id: string
@@ -108,7 +112,9 @@ export type Database = {
           created_at?: string | null
           id?: string
           share_anonymized?: boolean
+          share_circle_connections?: boolean | null
           share_communities?: boolean
+          share_community_memberships?: boolean | null
           share_private_circle?: boolean
           updated_at?: string
           user_id?: string
