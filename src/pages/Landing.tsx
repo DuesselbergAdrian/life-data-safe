@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Shield, Users, TrendingUp, Heart, Lock, CheckCircle } from "lucide-react";
+import heroImage from "@/assets/hero-health-tech.jpg";
 
 const Landing = () => {
   return (
@@ -28,20 +29,32 @@ const Landing = () => {
       </header>
 
       {/* Hero */}
-      <section className="container mx-auto px-4 py-20 text-center">
-        <div className="max-w-3xl mx-auto">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground">
-            Your Health Data,
-            <span className="text-primary"> Your Control</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-8">
-            GDPR-native health data platform. Share on your terms, contribute to research, and build your health community—all while keeping full control.
-          </p>
-          <Link to="/auth">
-            <Button size="lg" className="text-lg px-8">
-              Start Your Health Vault
-            </Button>
-          </Link>
+      <section className="relative overflow-hidden bg-gradient-hero">
+        <div className="container mx-auto px-4 py-20">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-left">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground">
+                Your Health Data,
+                <span className="text-primary"> Your Control</span>
+              </h1>
+              <p className="text-xl text-muted-foreground mb-8">
+                GDPR-native health data platform. Connect your wearables, share on your terms, contribute to research—all while keeping full control.
+              </p>
+              <Link to="/auth">
+                <Button size="lg" className="text-lg px-8 shadow-glow hover:shadow-lg transition-all">
+                  Start Your Health Vault
+                </Button>
+              </Link>
+            </div>
+            <div className="relative">
+              <img 
+                src={heroImage} 
+                alt="Person using smart glasses and wearables to manage health data" 
+                className="rounded-2xl shadow-2xl"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent rounded-2xl" />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -69,7 +82,7 @@ const Landing = () => {
           Human-Centered Health Data
         </h2>
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          <Card className="p-6">
+          <Card className="p-6 bg-gradient-card border-primary/20 hover:border-primary/40 transition-all hover:shadow-lg">
             <Shield className="h-12 w-12 text-primary mb-4" />
             <h3 className="text-xl font-semibold mb-2">Consent Wallet</h3>
             <p className="text-muted-foreground">
@@ -77,7 +90,7 @@ const Landing = () => {
             </p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 bg-gradient-card border-secondary/20 hover:border-secondary/40 transition-all hover:shadow-lg">
             <Users className="h-12 w-12 text-secondary mb-4" />
             <h3 className="text-xl font-semibold mb-2">Private Circle</h3>
             <p className="text-muted-foreground">
@@ -85,7 +98,7 @@ const Landing = () => {
             </p>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 bg-gradient-card border-accent/20 hover:border-accent/40 transition-all hover:shadow-lg">
             <TrendingUp className="h-12 w-12 text-accent mb-4" />
             <h3 className="text-xl font-semibold mb-2">Impact Dashboard</h3>
             <p className="text-muted-foreground">
@@ -96,8 +109,9 @@ const Landing = () => {
       </section>
 
       {/* CTA */}
-      <section className="bg-muted py-16">
-        <div className="container mx-auto px-4 text-center">
+      <section className="bg-gradient-to-br from-primary/10 via-accent/10 to-secondary/10 py-16 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-hero opacity-50" />
+        <div className="container mx-auto px-4 text-center relative z-10">
           <h2 className="text-3xl font-bold mb-4 text-foreground">
             Ready to take control?
           </h2>
@@ -105,7 +119,7 @@ const Landing = () => {
             Join thousands of people building a healthier future together, one data point at a time.
           </p>
           <Link to="/auth">
-            <Button size="lg" className="text-lg px-8">
+            <Button size="lg" className="text-lg px-8 shadow-glow hover:shadow-xl transition-all">
               Get Started Free
             </Button>
           </Link>
