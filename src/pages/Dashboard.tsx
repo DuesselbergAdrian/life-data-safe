@@ -17,7 +17,7 @@ import {
 import { Heart, LogOut, User as UserIcon, Download, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import OverviewTab from "@/components/dashboard/OverviewTab";
-import UploadTab from "@/components/dashboard/UploadTab";
+import SyncTab from "@/components/dashboard/SyncTab";
 import ConsentTab from "@/components/dashboard/ConsentTab";
 import SocialTab from "@/components/dashboard/SocialTab";
 import CommunitiesTab from "@/components/dashboard/CommunitiesTab";
@@ -223,7 +223,7 @@ const Dashboard = () => {
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="upload">Upload</TabsTrigger>
+            <TabsTrigger value="sync">Sync</TabsTrigger>
             <TabsTrigger value="consent">Consent</TabsTrigger>
             <TabsTrigger value="social">Social</TabsTrigger>
             <TabsTrigger value="communities">Communities</TabsTrigger>
@@ -234,8 +234,8 @@ const Dashboard = () => {
             <OverviewTab userId={user?.id} />
           </TabsContent>
 
-          <TabsContent value="upload">
-            <UploadTab userId={user?.id} />
+          <TabsContent value="sync">
+            <SyncTab userId={user?.id} />
           </TabsContent>
 
           <TabsContent value="consent">
