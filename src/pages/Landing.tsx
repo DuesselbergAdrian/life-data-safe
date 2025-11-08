@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Shield, Users, TrendingUp, Heart, Lock, CheckCircle } from "lucide-react";
-import heroImage from "@/assets/hero-health-tech.jpg";
+import heroImage from "@/assets/hero-street-scene.jpg";
 
 const Landing = () => {
   return (
@@ -29,30 +29,52 @@ const Landing = () => {
       </header>
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-hero">
-        <div className="container mx-auto px-4 py-20">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-left">
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 text-foreground">
-                Your Health Data,
-                <span className="text-primary"> Your Control</span>
-              </h1>
-              <p className="text-xl text-muted-foreground mb-8">
-                GDPR-native health data platform. Connect your wearables, share on your terms, contribute to research—all while keeping full control.
-              </p>
+      <section className="relative min-h-[90vh] overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt="Person on street using Meta smart glasses, AirPods, and smartwatch to collect and manage health data on mobile device" 
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
+        </div>
+
+        {/* Content */}
+        <div className="relative container mx-auto px-4 py-32 min-h-[90vh] flex items-center">
+          <div className="max-w-2xl">
+            <div className="mb-6 inline-block">
+              <span className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium border border-primary/20">
+                Real-world health data collection
+              </span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 text-foreground leading-tight">
+              Collect. Control.
+              <span className="text-primary block mt-2">Contribute.</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground mb-8 leading-relaxed">
+              Your Meta glasses, AirPods, smartwatch—all your wearables working together. Capture health data seamlessly as you live, manage it on your terms, and contribute to research that matters.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
               <Link to="/auth">
-                <Button size="lg" className="text-lg px-8 shadow-glow hover:shadow-lg transition-all">
+                <Button size="lg" className="text-lg px-8 shadow-glow hover:shadow-xl transition-all">
                   Start Your Health Vault
                 </Button>
               </Link>
+              <Button size="lg" variant="outline" className="text-lg px-8 border-primary/50 hover:bg-primary/10">
+                See How It Works
+              </Button>
             </div>
-            <div className="relative">
-              <img 
-                src={heroImage} 
-                alt="Person using smart glasses and wearables to manage health data" 
-                className="rounded-2xl shadow-2xl"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent rounded-2xl" />
+            <div className="mt-12 flex items-center gap-6 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <span>GDPR Compliant</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5 text-primary" />
+                <span>EU Data Residency</span>
+              </div>
             </div>
           </div>
         </div>
