@@ -9,8 +9,10 @@ export const DataUnificationAnimation = () => {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && !isAnimating) {
+          if (entry.isIntersecting) {
             setIsAnimating(true);
+          } else {
+            setIsAnimating(false);
           }
         });
       },
@@ -22,7 +24,7 @@ export const DataUnificationAnimation = () => {
     }
 
     return () => observer.disconnect();
-  }, [isAnimating]);
+  }, []);
 
   const logos = [
     { 
@@ -80,7 +82,7 @@ export const DataUnificationAnimation = () => {
           return (
             <div
               key={logo.id}
-              className="absolute transition-all duration-[2000ms] ease-out"
+              className="absolute transition-all duration-[3500ms] ease-out"
               style={{
                 left: isAnimating ? '50%' : `${logo.startX}%`,
                 top: isAnimating ? '50%' : `${logo.startY}%`,
@@ -88,7 +90,7 @@ export const DataUnificationAnimation = () => {
                   ? 'translate(-50%, -50%) scale(0.3)' 
                   : 'translate(-50%, -50%) scale(1)',
                 opacity: isAnimating ? 0 : 1,
-                transitionDelay: `${index * 150}ms`,
+                transitionDelay: `${index * 200}ms`,
               }}
             >
               <div className={`${logo.color} rounded-2xl p-4 md:p-6 shadow-2xl`}>
