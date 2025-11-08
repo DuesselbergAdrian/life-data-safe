@@ -18,6 +18,7 @@ import { Heart, LogOut, User as UserIcon, Download, Trash2, Loader2 } from "luci
 import { useToast } from "@/hooks/use-toast";
 import OverviewTab from "@/components/dashboard/OverviewTab";
 import SyncTab from "@/components/dashboard/SyncTab";
+import TrendsTab from "@/components/dashboard/TrendsTab";
 import ConsentTab from "@/components/dashboard/ConsentTab";
 import SocialTab from "@/components/dashboard/SocialTab";
 import CommunitiesTab from "@/components/dashboard/CommunitiesTab";
@@ -221,9 +222,10 @@ const Dashboard = () => {
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="sync">Sync</TabsTrigger>
+            <TabsTrigger value="trends">Trends</TabsTrigger>
             <TabsTrigger value="consent">Consent</TabsTrigger>
             <TabsTrigger value="social">Social</TabsTrigger>
             <TabsTrigger value="communities">Communities</TabsTrigger>
@@ -236,6 +238,10 @@ const Dashboard = () => {
 
           <TabsContent value="sync">
             <SyncTab userId={user?.id} />
+          </TabsContent>
+
+          <TabsContent value="trends">
+            <TrendsTab userId={user?.id} />
           </TabsContent>
 
           <TabsContent value="consent">
