@@ -39,28 +39,27 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="container mx-auto px-6 pt-24 pb-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="space-y-6">
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
-                Your health, unified.
-              </h1>
-              <p className="text-xl text-muted-foreground leading-relaxed">
-                Own your data. See it live. Sync from the devices you already use.
-              </p>
-              <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
-                <Button size="lg" className="px-8" asChild>
-                  <Link to="/onboarding">Sync data</Link>
-                </Button>
-                <Button size="lg" variant="ghost" asChild>
-                  <Link to="/auth">Explore demo</Link>
-                </Button>
-              </div>
-            </div>
-            <div className="relative">
-              <DataUnificationAnimation />
-            </div>
+      <section className="relative container mx-auto px-6 pt-24 pb-16 min-h-[700px] flex items-center">
+        {/* Background Animation */}
+        <div className="absolute inset-0 z-0">
+          <DataUnificationAnimation />
+        </div>
+
+        {/* Hero Content */}
+        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+            Your health, unified.
+          </h1>
+          <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+            Own your data. See it live. Sync from the devices you already use.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+            <Button size="lg" className="px-8" asChild>
+              <Link to="/onboarding">Sync data</Link>
+            </Button>
+            <Button size="lg" variant="ghost" asChild>
+              <Link to="/auth">Explore demo</Link>
+            </Button>
           </div>
         </div>
       </section>
