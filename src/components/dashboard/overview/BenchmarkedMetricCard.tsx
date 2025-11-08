@@ -87,16 +87,37 @@ export const BenchmarkedMetricCard = ({
           </div>
         </div>
 
-        {/* Sparkline */}
+        {/* Sparkline with trend indication */}
         {sparkline && sparkline.length > 0 && (
-          <div className="h-12 flex items-end gap-1 pt-2 border-t border-border/50">
-            {sparkline.map((point, idx) => (
-              <div
-                key={idx}
-                className="flex-1 bg-gradient-to-t from-primary/30 to-primary/10 rounded-t-sm transition-all duration-200 hover:from-primary/50 hover:to-primary/20"
-                style={{ height: `${(point / Math.max(...sparkline)) * 100}%` }}
-              />
-            ))}
+          <div className="space-y-1.5 pt-3 border-t border-border/50">
+            <div className="flex items-end gap-1 h-12">
+              {sparkline.map((point, idx) => {
+                const height = (point / Math.max(...sparkline)) * 100;
+                const isLast = idx === sparkline.length - 1;
+                const prevPoint = idx > 0 ? sparkline[idx - 1] : point;
+                const isImproving = point > prevPoint;
+                const isWorsening = point < prevPoint;
+                
+                return (
+                  <div
+                    key={idx}
+                    className={cn(
+                      "flex-1 rounded-t-sm transition-all duration-200 relative",
+                      isLast && "ring-2 ring-primary/60 ring-offset-1",
+                      isImproving && !isLast && "bg-gradient-to-t from-health-good/40 to-health-good/20 hover:from-health-good/60 hover:to-health-good/30",
+                      isWorsening && !isLast && "bg-gradient-to-t from-health-bad/40 to-health-bad/20 hover:from-health-bad/60 hover:to-health-bad/30",
+                      !isImproving && !isWorsening && !isLast && "bg-gradient-to-t from-primary/30 to-primary/10 hover:from-primary/50 hover:to-primary/20",
+                      isLast && "bg-gradient-to-t from-primary to-primary/60"
+                    )}
+                    style={{ height: `${Math.max(height, 10)}%` }}
+                  />
+                );
+              })}
+            </div>
+            <div className="flex justify-between text-[10px] text-muted-foreground font-medium">
+              <span>{sparkline.length}d ago</span>
+              <span className="text-primary">Today</span>
+            </div>
           </div>
         )}
       </div>

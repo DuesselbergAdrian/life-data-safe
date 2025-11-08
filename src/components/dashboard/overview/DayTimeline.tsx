@@ -81,10 +81,12 @@ export const DayTimeline = ({ blocks }: DayTimelineProps) => {
               {blocks.map((block, idx) => {
                 const config = BLOCK_CONFIG[block.type];
                 const Icon = config.icon;
-                const startHour = new Date(block.start).getHours();
-                const endHour = new Date(block.end).getHours();
-                const duration = endHour - startHour;
-                const width = (duration / 24) * 100;
+                
+                // Calculate duration in minutes for accurate width
+                const startMs = new Date(block.start).getTime();
+                const endMs = new Date(block.end).getTime();
+                const durationMinutes = (endMs - startMs) / 60000;
+                const width = (durationMinutes / (24 * 60)) * 100;
 
                 return (
                   <div
@@ -101,7 +103,7 @@ export const DayTimeline = ({ blocks }: DayTimelineProps) => {
                     onTouchEnd={handleRelease}
                   >
                     <Icon className="h-4 w-4" />
-                    {duration > 2 && (
+                    {durationMinutes > 120 && (
                       <span className="text-xs font-medium">{config.label}</span>
                     )}
                   </div>
@@ -147,6 +149,26 @@ export const DayTimeline = ({ blocks }: DayTimelineProps) => {
                     <>
                       <p className="text-sm text-muted-foreground">Efficiency: {selectedBlock.meta.efficiency}%</p>
                       <p className="text-sm text-muted-foreground">HRV: {selectedBlock.meta.hrv} ms</p>
+                      {selectedBlock.meta.deepSleep && <p className="text-sm text-muted-foreground">Deep Sleep: {selectedBlock.meta.deepSleep}</p>}
+                      {selectedBlock.meta.remSleep && <p className="text-sm text-muted-foreground">REM Sleep: {selectedBlock.meta.remSleep}</p>}
+                    </>
+                  )}
+                  {selectedBlock.type === 'work' && (
+                    <>
+                      {selectedBlock.meta.posture && <p className="text-sm text-muted-foreground">Posture: {selectedBlock.meta.posture}</p>}
+                      {selectedBlock.meta.standTime && <p className="text-sm text-muted-foreground">Stand Time: {selectedBlock.meta.standTime}</p>}
+                      {selectedBlock.meta.focusScore && <p className="text-sm text-muted-foreground">Focus Score: {selectedBlock.meta.focusScore}</p>}
+                      {selectedBlock.meta.scrollTime && <p className="text-sm text-muted-foreground">Social Media: {selectedBlock.meta.scrollTime}</p>}
+                    </>
+                  )}
+                  {selectedBlock.type === 'leisure' && (
+                    <>
+                      {selectedBlock.meta.activities && <p className="text-sm">{selectedBlock.meta.activities}</p>}
+                      {selectedBlock.meta.screenTime && <p className="text-sm text-muted-foreground">Screen Time: {selectedBlock.meta.screenTime}</p>}
+                      {selectedBlock.meta.steps && <p className="text-sm text-muted-foreground">Steps: {selectedBlock.meta.steps}</p>}
+                      {selectedBlock.meta.transport && <p className="text-sm text-muted-foreground">Transport: {selectedBlock.meta.transport}</p>}
+                      {selectedBlock.meta.activity && <p className="text-sm">{selectedBlock.meta.activity}</p>}
+                      {selectedBlock.meta.context && <p className="text-sm text-muted-foreground">{selectedBlock.meta.context}</p>}
                     </>
                   )}
                 </div>
