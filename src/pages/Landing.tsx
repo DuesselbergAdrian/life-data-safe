@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Shield, Users, TrendingUp, Heart, Lock, CheckCircle } from "lucide-react";
-import heroImage from "@/assets/hero-comic-street.jpg";
+import heroImage from "@/assets/hero-street-scene.jpg";
 
 const Landing = () => {
   return (
