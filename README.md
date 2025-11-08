@@ -264,13 +264,6 @@ Built with a comprehensive design system using semantic tokens:
 
 ---
 
-## 📊 Performance
-
-- **First Load**: < 2s on 3G
-- **Time to Interactive**: < 3s
-- **Lighthouse Score**: 95+ (Performance, Accessibility, Best Practices, SEO)
-- **Bundle Size**: < 500KB gzipped
-
 ---
 
 ## 🤝 Contributing
