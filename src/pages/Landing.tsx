@@ -59,11 +59,7 @@ const Landing = () => {
               </div>
             </div>
             <div className="relative">
-              <img 
-                src={heroImage} 
-                alt="Unified health data dashboard" 
-                className="rounded-2xl shadow-2xl border border-border"
-              />
+              <DataUnificationAnimation />
             </div>
           </div>
         </div>
@@ -97,9 +93,6 @@ const Landing = () => {
           </div>
         </div>
       </section>
-
-      {/* Data Unification Animation */}
-      <DataUnificationAnimation />
 
       {/* Key Stats Demo */}
       <section className="container mx-auto px-6 py-16">

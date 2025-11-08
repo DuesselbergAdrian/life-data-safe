@@ -2,147 +2,180 @@ import { useEffect, useRef, useState } from "react";
 import { Heart, FileSpreadsheet, Activity, Circle, TrendingUp } from "lucide-react";
 
 export const DataUnificationAnimation = () => {
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting && !isAnimating) {
-            setIsAnimating(true);
-          }
-        });
-      },
-      { threshold: 0.3 }
-    );
+    const handleScroll = () => {
+      if (!sectionRef.current) return;
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+      const rect = sectionRef.current.getBoundingClientRect();
+      const sectionHeight = rect.height;
+      const sectionTop = rect.top;
+      const windowHeight = window.innerHeight;
 
-    return () => observer.disconnect();
-  }, [isAnimating]);
+      // Calculate progress: 0 when section enters viewport, 1 when it leaves
+      const startScroll = windowHeight - sectionTop;
+      const progress = Math.max(0, Math.min(1, startScroll / (sectionHeight + windowHeight)));
+      
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll(); // Initial calculation
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const logos = [
     { 
       id: 'oura', 
       icon: Circle, 
       color: 'bg-blue-600',
-      initialPosition: 'top-8 left-12',
+      startX: 15,
+      startY: 10,
       name: 'Oura'
     },
     { 
       id: 'excel', 
       icon: FileSpreadsheet, 
       color: 'bg-green-600',
-      initialPosition: 'top-8 right-12',
+      startX: 85,
+      startY: 10,
       name: 'Excel'
     },
     { 
       id: 'health', 
       icon: Heart, 
       color: 'bg-red-500',
-      initialPosition: 'bottom-16 left-16',
+      startX: 10,
+      startY: 75,
       name: 'Apple Health'
     },
     { 
       id: 'whoop', 
       icon: Activity, 
       color: 'bg-gray-900',
-      initialPosition: 'bottom-24 left-1/2 -translate-x-32',
+      startX: 35,
+      startY: 80,
       name: 'Whoop'
     },
     { 
       id: 'strava', 
       icon: TrendingUp, 
       color: 'bg-orange-500',
-      initialPosition: 'bottom-16 right-16',
+      startX: 90,
+      startY: 75,
       name: 'Strava'
     },
   ];
 
+  const getLogoPosition = (logo: typeof logos[0]) => {
+    const centerX = 50;
+    const centerY = 50;
+    
+    const currentX = logo.startX + (centerX - logo.startX) * scrollProgress;
+    const currentY = logo.startY + (centerY - logo.startY) * scrollProgress;
+    const scale = 1 - (scrollProgress * 0.5);
+    const opacity = 1 - (scrollProgress * 0.9);
+    
+    return {
+      left: `${currentX}%`,
+      top: `${currentY}%`,
+      transform: `translate(-50%, -50%) scale(${scale})`,
+      opacity,
+    };
+  };
+
   return (
     <div 
       ref={sectionRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background py-32"
+      className="relative h-[600px] flex items-center justify-center overflow-hidden"
     >
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-muted/30 to-background" />
-      
-      <div className="relative w-full max-w-7xl mx-auto px-6">
+      <div className="relative w-full h-full">
         {/* Scattered Logos */}
-        <div className="relative h-[600px]">
-          {logos.map((logo) => {
-            const Icon = logo.icon;
-            return (
-              <div
-                key={logo.id}
-                className={`absolute ${logo.initialPosition} transition-all duration-1000 ease-out ${
-                  isAnimating 
-                    ? 'opacity-0 scale-50 !top-1/2 !left-1/2 !-translate-x-1/2 !-translate-y-1/2' 
-                    : 'opacity-100 scale-100'
-                }`}
+        {logos.map((logo) => {
+          const Icon = logo.icon;
+          const position = getLogoPosition(logo);
+          
+          return (
+            <div
+              key={logo.id}
+              className="absolute"
+              style={position}
+            >
+              <div className={`${logo.color} rounded-2xl p-4 md:p-6 shadow-2xl`}>
+                <Icon className="h-12 w-12 md:h-16 md:w-16 text-white" strokeWidth={1.5} />
+              </div>
+              <p 
+                className="text-xs md:text-sm text-muted-foreground text-center mt-2 font-medium whitespace-nowrap"
+                style={{ opacity: position.opacity }}
               >
-                <div className={`${logo.color} rounded-3xl p-6 shadow-2xl transform hover:scale-110 transition-transform`}>
-                  <Icon className="h-16 w-16 text-white" strokeWidth={1.5} />
-                </div>
-                <p className="text-sm text-muted-foreground text-center mt-3 font-medium">{logo.name}</p>
-              </div>
-            );
-          })}
+                {logo.name}
+              </p>
+            </div>
+          );
+        })}
 
-          {/* Center Health Vault Logo */}
-          <div 
-            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-1000 delay-500 ${
-              isAnimating ? 'opacity-100 scale-100' : 'opacity-0 scale-75'
-            }`}
-          >
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150" />
-              <div className="relative bg-background border-2 border-foreground rounded-full px-12 py-6 shadow-2xl">
-                <h2 className="text-4xl font-bold whitespace-nowrap">Health Vault</h2>
-              </div>
+        {/* Center Health Vault Logo */}
+        <div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          style={{
+            opacity: Math.min(1, scrollProgress * 2),
+            transform: `translate(-50%, -50%) scale(${0.75 + scrollProgress * 0.25})`,
+          }}
+        >
+          <div className="relative">
+            <div 
+              className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"
+              style={{ opacity: scrollProgress }}
+            />
+            <div className="relative bg-background border-2 border-foreground rounded-full px-8 md:px-12 py-4 md:py-6 shadow-2xl">
+              <h2 className="text-2xl md:text-4xl font-bold whitespace-nowrap">Health Vault</h2>
             </div>
           </div>
-
-          {/* Title */}
-          <div 
-            className={`absolute top-0 left-1/2 -translate-x-1/2 text-center transition-all duration-700 ${
-              isAnimating ? 'opacity-0 -translate-y-8' : 'opacity-100 translate-y-0'
-            }`}
-          >
-            <h2 className="text-5xl md:text-6xl font-bold mb-4">Our Data Lives In Silos</h2>
-          </div>
-
-          {/* Subtitle after animation */}
-          <div 
-            className={`absolute bottom-0 left-1/2 -translate-x-1/2 text-center transition-all duration-700 delay-1000 ${
-              isAnimating ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
-            }`}
-          >
-            <p className="text-xl text-muted-foreground max-w-2xl">
-              All your health data, unified in one secure place
-            </p>
-          </div>
         </div>
+
+        {/* Title */}
+        <div 
+          className="absolute top-0 left-1/2 -translate-x-1/2 text-center"
+          style={{
+            opacity: 1 - (scrollProgress * 1.5),
+            transform: `translate(-50%, ${scrollProgress * -30}px)`,
+          }}
+        >
+          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4">Our Data Lives In Silos</h2>
+        </div>
+
+        {/* Subtitle after animation */}
+        <div 
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-4"
+          style={{
+            opacity: Math.max(0, (scrollProgress - 0.3) * 2),
+            transform: `translate(-50%, ${(1 - scrollProgress) * 30}px)`,
+          }}
+        >
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
+            All your health data, unified in one secure place
+          </p>
+        </div>
+
+        {/* Connection lines effect */}
+        {scrollProgress > 0.5 && (
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(12)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute top-1/2 left-1/2 w-px h-24 bg-gradient-to-b from-primary/0 via-primary/30 to-primary/0"
+                style={{
+                  transform: `rotate(${i * 30}deg) translateY(-150px)`,
+                  opacity: (scrollProgress - 0.5) * 2,
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Connection lines effect */}
-      {isAnimating && (
-        <div className="absolute inset-0 pointer-events-none">
-          {[...Array(20)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute top-1/2 left-1/2 w-px h-32 bg-gradient-to-b from-primary/0 via-primary/30 to-primary/0"
-              style={{
-                transform: `rotate(${i * 18}deg) translateY(-200px)`,
-                animation: 'pulse 2s ease-in-out infinite',
-                animationDelay: `${i * 0.05}s`,
-              }}
-            />
-          ))}
-        </div>
-      )}
     </div>
   );
 };
