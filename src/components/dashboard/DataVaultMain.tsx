@@ -37,7 +37,7 @@ const DataVaultMain = ({ userId }: DataVaultMainProps) => {
         </TabsContent>
 
         <TabsContent value="consents">
-          <ConsentsManager />
+          <ConsentsManager userId={userId} />
         </TabsContent>
 
         <TabsContent value="rewards">
