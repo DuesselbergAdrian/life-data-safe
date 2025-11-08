@@ -17,7 +17,7 @@ export const MyDataTimeline = () => {
     <Card className="glass">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle className="text-lg font-semibold">My Data Timeline</CardTitle>
+          <CardTitle className="text-lg font-semibold">My Stats</CardTitle>
           <p className="text-sm text-muted-foreground mt-1">Unified view of all synced health data</p>
         </div>
         <div className="flex items-center gap-2">
@@ -38,27 +38,29 @@ export const MyDataTimeline = () => {
           </Button>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3">
-        {TIMELINE_DATA.map((item, idx) => (
-          <div 
-            key={idx}
-            className="flex items-center gap-4 p-4 rounded-lg hover:bg-muted/50 transition-colors border border-transparent hover:border-border"
-          >
-            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-              <item.icon className="h-5 w-5 text-primary" />
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="font-medium text-sm">{item.type}</span>
-                <Badge variant="outline" className="text-xs">{item.source}</Badge>
+      <CardContent>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {TIMELINE_DATA.map((item, idx) => (
+            <div 
+              key={idx}
+              className="flex flex-col gap-3 p-4 rounded-lg hover:bg-muted/50 transition-colors border border-border hover:shadow-sm"
+            >
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <item.icon className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <span className="font-medium text-sm block">{item.type}</span>
+                  <Badge variant="outline" className="text-xs mt-1">{item.source}</Badge>
+                </div>
               </div>
-              <p className="text-xs text-muted-foreground">{item.time}</p>
+              <div className="flex items-baseline justify-between">
+                <p className="font-semibold text-2xl">{item.value}</p>
+                <p className="text-xs text-muted-foreground">{item.time}</p>
+              </div>
             </div>
-            <div className="text-right">
-              <p className="font-semibold text-lg">{item.value}</p>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </CardContent>
     </Card>
   );
