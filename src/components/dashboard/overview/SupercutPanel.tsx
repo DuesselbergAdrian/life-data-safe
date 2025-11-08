@@ -16,8 +16,7 @@ export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
       
       // Simulate video generation/loading
       const loadTimer = setTimeout(() => {
-        // Mock video URL - replace with actual Supabase URL
-        setVideoUrl('https://yoqsviiqmkdeurzipdmq.supabase.co/storage/v1/object/public/supercuts/today.mp4');
+        setVideoUrl('https://player.cloudinary.com/embed/?cloud_name=diqe550vg&public_id=Min_film_2_eo7mxx&profile=cld-default');
         setState('ready');
       }, 2000);
 
@@ -50,16 +49,14 @@ export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
           <h3 className="text-lg font-semibold">Supercut of Today</h3>
         </div>
         
-        <div className="relative rounded-xl overflow-hidden bg-muted aspect-video shadow-lg">
+        <div className="relative rounded-xl overflow-hidden bg-muted shadow-lg mx-auto" style={{ aspectRatio: '9/16', maxWidth: '400px' }}>
           {videoUrl ? (
-            <video 
-              controls 
-              muted 
-              className="w-full h-full"
+            <iframe
               src={videoUrl}
-            >
-              Your browser does not support the video tag.
-            </video>
+              className="w-full h-full"
+              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+              allowFullScreen
+            />
           ) : (
             <div className="flex items-center justify-center h-full">
               <div className="flex flex-col items-center gap-3 text-muted-foreground">

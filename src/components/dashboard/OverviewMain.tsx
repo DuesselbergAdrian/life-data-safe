@@ -95,11 +95,6 @@ const generateMockBlocks = (): DayBlock[] => {
 };
 
 const OverviewMain = ({ userId }: OverviewMainProps) => {
-  // Check if phases have been run today
-  const getLastRunDate = () => localStorage.getItem('overview_last_run');
-  const setLastRunDate = () => localStorage.setItem('overview_last_run', new Date().toDateString());
-  const shouldRunPhases = getLastRunDate() !== new Date().toDateString();
-  
   // Get authorized providers from onboarding
   const getAuthorizedProviders = (): ProviderKey[] => {
     const stored = localStorage.getItem('authorized_providers');
@@ -108,7 +103,8 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
   
   const authorizedProviders = getAuthorizedProviders();
   
-  const { phase, scheduleTransition } = usePhase(shouldRunPhases ? 'sync' : 'overview');
+  // Always start with sync phase on component mount
+  const { phase, scheduleTransition } = usePhase('sync');
   const [providers, setProviders] = useState<ProviderState[]>(
     PROVIDERS.map(p => ({ 
       ...p, 
@@ -194,12 +190,6 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
     }
   }, [phase, scheduleTransition]);
 
-  // Mark phases as complete when reaching overview
-  useEffect(() => {
-    if (phase === 'overview' && shouldRunPhases) {
-      setLastRunDate();
-    }
-  }, [phase, shouldRunPhases]);
 
   // Mock metrics
   const metrics = {
