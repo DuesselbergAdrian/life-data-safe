@@ -46,10 +46,16 @@ const Landing = () => {
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-8">
+        <div className="relative z-10 max-w-3xl mx-auto text-center">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
             Your health, unified.
           </h1>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="container mx-auto px-6 pb-16">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" className="px-8" asChild>
               <Link to="/onboarding">Sync data</Link>
