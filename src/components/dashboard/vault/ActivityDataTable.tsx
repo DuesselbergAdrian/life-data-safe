@@ -226,11 +226,11 @@ export const ActivityDataTable = () => {
             <TableHeader>
               <TableRow className="bg-muted/30 hover:bg-muted/30">
                 <TableHead className="w-12"></TableHead>
-                <TableHead>Activity</TableHead>
-                <TableHead>Data Source</TableHead>
-                <TableHead>Value</TableHead>
                 <TableHead>Date & Time</TableHead>
+                <TableHead>Activity</TableHead>
+                <TableHead>Value</TableHead>
                 <TableHead>Tags</TableHead>
+                <TableHead>Data Source</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -248,16 +248,11 @@ export const ActivityDataTable = () => {
                       {item.icon}
                     </div>
                   </TableCell>
-                  <TableCell className="font-medium">{item.activity}</TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className="text-xs">
-                      {item.dataSource}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-semibold">{item.value}</TableCell>
                   <TableCell className="text-muted-foreground text-sm">
                     {item.dateTime}
                   </TableCell>
+                  <TableCell className="font-medium">{item.activity}</TableCell>
+                  <TableCell className="font-semibold">{item.value}</TableCell>
                   <TableCell>
                     <div className="flex gap-1 flex-wrap">
                       {item.tags.map((tag, idx) => (
@@ -270,6 +265,11 @@ export const ActivityDataTable = () => {
                         </Badge>
                       ))}
                     </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="outline" className="text-xs">
+                      {item.dataSource}
+                    </Badge>
                   </TableCell>
                 </TableRow>
                 ))
