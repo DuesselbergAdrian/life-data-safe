@@ -136,17 +136,6 @@ export const DataUnificationAnimation = () => {
           </div>
         </div>
 
-        {/* Title */}
-        <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 text-center"
-          style={{
-            opacity: 1 - (scrollProgress * 1.5),
-            transform: `translate(-50%, ${scrollProgress * -30}px)`,
-          }}
-        >
-          <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-4">Our Data Lives In Silos</h2>
-        </div>
-
         {/* Subtitle after animation */}
         <div 
           className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-4"
