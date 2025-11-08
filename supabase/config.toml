@@ -1,1 +1,4 @@
 project_id = "yoqsviiqmkdeurzipdmq"
+
+[functions.analyze-glasses-video]
+verify_jwt = true
