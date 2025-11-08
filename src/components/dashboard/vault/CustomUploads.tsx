@@ -1,9 +1,8 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
-import { FileText, Upload, Download, Share2, Trash2, Video, Glasses, Info, CheckCircle2, Smartphone, Bluetooth } from "lucide-react";
+import { FileText, Upload, Download, Share2, Trash2, Video, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useState } from "react";
 
 const UPLOADS = [
@@ -140,70 +139,6 @@ export const CustomUploads = () => {
 
   return (
     <div className="space-y-6">
-      {/* Meta Glasses Sync Instructions */}
-      <Card className="glass border-primary/20">
-        <CardHeader>
-          <div className="flex items-center gap-2">
-            <Glasses className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg font-semibold">Sync Meta Glasses</CardTitle>
-          </div>
-          <CardDescription>Import videos and photos from your Ray-Ban Meta or Oakley Meta glasses</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Auto-import is enabled by default</strong> for Android 13+ and iOS devices when using the Meta AI mobile app.
-            </AlertDescription>
-          </Alert>
-
-          <div className="space-y-3">
-            <h4 className="font-medium text-sm">Manual import steps:</h4>
-            <div className="space-y-2">
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Bluetooth className="h-3 w-3 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Enable Bluetooth & pair glasses</p>
-                  <p className="text-xs text-muted-foreground">Ensure Bluetooth is on and glasses are paired with the Meta AI mobile app</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Smartphone className="h-3 w-3 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Open Meta AI mobile app</p>
-                  <p className="text-xs text-muted-foreground">Tap the profile icon in bottom right corner</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Upload className="h-3 w-3 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Import media</p>
-                  <p className="text-xs text-muted-foreground">If you have unimported captures, tap "Import" next to Gallery</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <CheckCircle2 className="h-3 w-3 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Access your media</p>
-                  <p className="text-xs text-muted-foreground">Once imported to your phone's photo app, upload videos here for analysis</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Meta Glasses Video Upload */}
       <Card className="glass border-dashed border-2 hover:border-primary/50 transition-colors">
         <CardContent className="flex flex-col items-center justify-center py-12">
