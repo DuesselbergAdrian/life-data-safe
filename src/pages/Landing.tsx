@@ -39,21 +39,18 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative container mx-auto px-6 pt-24 pb-16 min-h-[700px] flex items-center">
+      <section className="relative container mx-auto px-6 pt-24 pb-16 min-h-[700px] flex flex-col items-center justify-center">
         {/* Background Animation */}
         <div className="absolute inset-0 z-0">
           <DataUnificationAnimation />
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
+        <div className="relative z-10 max-w-3xl mx-auto text-center space-y-8">
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
             Your health, unified.
           </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Own your data. See it live. Sync from the devices you already use.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" className="px-8" asChild>
               <Link to="/onboarding">Sync data</Link>
             </Button>
@@ -61,6 +58,9 @@ const Landing = () => {
               <Link to="/auth">Explore demo</Link>
             </Button>
           </div>
+          <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
+            Own your data. See it live. Sync from the devices you already use.
+          </p>
         </div>
       </section>
 
