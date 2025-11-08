@@ -1,220 +1,351 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { Shield, Database, Users, Globe } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/hooks/use-toast";
+import { 
+  Building2, 
+  Users, 
+  TrendingUp, 
+  CheckCircle2, 
+  DollarSign,
+  Sparkles,
+  ChevronDown,
+  ChevronUp
+} from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
-interface ConsentTabProps {
-  userId?: string;
+interface ResearchProject {
+  id: string;
+  name: string;
+  institute: string;
+  description: string;
+  data_requested: string[];
+  benefits: string[];
+  compensation_type: string;
+  compensation_value: string;
+  participant_count: number;
 }
 
-const ConsentTab = ({ userId }: ConsentTabProps) => {
-  const [consents, setConsents] = useState({
-    share_anonymized: false,
-    share_private_circle: false,
-    share_communities: false,
-  });
-  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+interface ProjectConsent {
+  id: string;
+  project_id: string;
+  status: string;
+  consented_at: string;
+  data_shared: string[];
+}
+
+const ConsentTab = ({ userId }: { userId?: string }) => {
+  const [projects, setProjects] = useState<ResearchProject[]>([]);
+  const [userConsents, setUserConsents] = useState<ProjectConsent[]>([]);
+  const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
     if (userId) {
-      fetchConsents();
-      fetchAuditLogs();
+      loadProjects();
+      loadUserConsents();
     }
   }, [userId]);
 
-  const fetchConsents = async () => {
-    if (!userId) return;
+  const loadProjects = async () => {
+    const { data, error } = await supabase
+      .from("research_projects")
+      .select("*")
+      .eq("status", "active")
+      .order("participant_count", { ascending: false });
 
-    const { data } = await supabase
-      .from("consents")
+    if (!error && data) {
+      setProjects(data);
+    }
+    setLoading(false);
+  };
+
+  const loadUserConsents = async () => {
+    if (!userId) return;
+    
+    const { data, error } = await supabase
+      .from("project_consents")
       .select("*")
       .eq("user_id", userId)
-      .single();
+      .eq("status", "active");
 
-    if (data) {
-      setConsents({
-        share_anonymized: data.share_anonymized,
-        share_private_circle: data.share_private_circle,
-        share_communities: data.share_communities,
-      });
+    if (!error && data) {
+      setUserConsents(data);
     }
   };
 
-  const fetchAuditLogs = async () => {
-    if (!userId) return;
-
-    const { data } = await supabase
-      .from("audit_logs")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false })
-      .limit(10);
-
-    setAuditLogs(data || []);
+  const hasConsented = (projectId: string) => {
+    return userConsents.some(c => c.project_id === projectId && c.status === "active");
   };
 
-  const handleConsentChange = async (field: keyof typeof consents, value: boolean) => {
+  const handleToggleConsent = async (project: ResearchProject) => {
     if (!userId) return;
+    
+    const existingConsent = userConsents.find(c => c.project_id === project.id);
 
-    try {
-      // Update consent
+    if (existingConsent) {
+      // Revoke consent
       const { error } = await supabase
-        .from("consents")
-        .update({ [field]: value })
-        .eq("user_id", userId);
+        .from("project_consents")
+        .update({ 
+          status: "revoked",
+          revoked_at: new Date().toISOString()
+        })
+        .eq("id", existingConsent.id);
 
-      if (error) throw error;
+      if (!error) {
+        await supabase.from("audit_logs").insert({
+          user_id: userId,
+          action: "CONSENT_REVOKE",
+          scope: "research",
+          details: { project_id: project.id, project_name: project.name }
+        });
 
-      // Log the change
-      await supabase.from("audit_logs").insert({
-        user_id: userId,
-        action: value ? "GRANT_CONSENT" : "REVOKE_CONSENT",
-        scope: field,
-        details: { timestamp: new Date().toISOString() },
-      });
+        setUserConsents(prev => prev.filter(c => c.id !== existingConsent.id));
+        
+        toast({
+          title: "Consent revoked",
+          description: `You've stopped sharing data with ${project.name}`,
+        });
+      }
+    } else {
+      // Grant consent
+      const { data, error } = await supabase
+        .from("project_consents")
+        .insert({
+          user_id: userId,
+          project_id: project.id,
+          status: "active",
+          data_shared: project.data_requested,
+        })
+        .select()
+        .single();
 
-      setConsents({ ...consents, [field]: value });
+      if (!error && data) {
+        await supabase.from("audit_logs").insert({
+          user_id: userId,
+          action: "CONSENT_GRANT",
+          scope: "research",
+          details: { 
+            project_id: project.id, 
+            project_name: project.name,
+            data_shared: project.data_requested 
+          }
+        });
 
-      toast({
-        title: value ? "Consent granted" : "Consent revoked",
-        description: "You can change this anytime in your settings.",
-      });
-
-      fetchAuditLogs();
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message,
-        variant: "destructive",
-      });
+        setUserConsents(prev => [...prev, data]);
+        
+        toast({
+          title: "Consent granted! 🎉",
+          description: `You're now contributing to ${project.name}`,
+        });
+      }
     }
   };
+
+  const toggleExpanded = (projectId: string) => {
+    setExpandedProjects(prev => {
+      const next = new Set(prev);
+      if (next.has(projectId)) {
+        next.delete(projectId);
+      } else {
+        next.add(projectId);
+      }
+      return next;
+    });
+  };
+
+  const getDataTypeIcon = (dataType: string) => {
+    const icons: Record<string, string> = {
+      steps: "👟",
+      sleep: "😴",
+      heart_rate: "❤️",
+      location: "📍",
+      weight: "⚖️",
+      blood_pressure: "🩺",
+      mood: "😊",
+      stress_level: "😰",
+      screen_time: "📱",
+      social_interactions: "👥",
+      meal_logs: "🍽️",
+      glucose: "🩸",
+      age: "📅",
+      videos: "🎥",
+    };
+    return icons[dataType] || "📊";
+  };
+
+  if (loading) {
+    return <div className="text-center py-8">Loading research projects...</div>;
+  }
+
+  const activeConsentCount = userConsents.filter(c => c.status === "active").length;
 
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold mb-2">Consent Wallet</h2>
-        <p className="text-muted-foreground">Control who can access your health data and for what purpose</p>
+        <h2 className="text-2xl font-semibold mb-2">Research Consent Wallet</h2>
+        <p className="text-muted-foreground">
+          Choose which research projects to contribute your health data to. Each project offers unique benefits and compensation.
+        </p>
       </div>
 
-      {/* Consent Controls */}
-      <div className="grid gap-4">
-        <Card>
-          <CardHeader>
-            <div className="flex items-start gap-4">
-              <Database className="h-6 w-6 text-primary mt-1" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <CardTitle>Share with Research</CardTitle>
-                  <Switch
-                    checked={consents.share_anonymized}
-                    onCheckedChange={(checked) => handleConsentChange("share_anonymized", checked)}
-                  />
-                </div>
-                <CardDescription className="mt-2">
-                  Share anonymized metrics to contribute to medical research. Your identity remains private.
-                </CardDescription>
-              </div>
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-primary/10 p-2 rounded">
+              <CheckCircle2 className="h-5 w-5 text-primary" />
             </div>
-          </CardHeader>
+            <div>
+              <p className="text-sm text-muted-foreground">Active Consents</p>
+              <p className="text-2xl font-bold">{activeConsentCount}</p>
+            </div>
+          </div>
+        </Card>
+        
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-green-500/10 p-2 rounded">
+              <Building2 className="h-5 w-5 text-green-600" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Available Projects</p>
+              <p className="text-2xl font-bold">{projects.length}</p>
+            </div>
+          </div>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <div className="flex items-start gap-4">
-              <Users className="h-6 w-6 text-secondary mt-1" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <CardTitle>Share with Private Circle</CardTitle>
-                  <Switch
-                    checked={consents.share_private_circle}
-                    onCheckedChange={(checked) => handleConsentChange("share_private_circle", checked)}
-                  />
-                </div>
-                <CardDescription className="mt-2">
-                  Allow your trusted contacts to see selected health metrics you've permitted.
-                </CardDescription>
-              </div>
+        <Card className="p-4">
+          <div className="flex items-center space-x-3">
+            <div className="bg-blue-500/10 p-2 rounded">
+              <Users className="h-5 w-5 text-blue-600" />
             </div>
-          </CardHeader>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <div className="flex items-start gap-4">
-              <Globe className="h-6 w-6 text-accent mt-1" />
-              <div className="flex-1">
-                <div className="flex items-center justify-between">
-                  <CardTitle>Share with Communities</CardTitle>
-                  <Switch
-                    checked={consents.share_communities}
-                    onCheckedChange={(checked) => handleConsentChange("share_communities", checked)}
-                  />
-                </div>
-                <CardDescription className="mt-2">
-                  Contribute aggregated data to communities you've joined. Helps community insights.
-                </CardDescription>
-              </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Total Participants</p>
+              <p className="text-2xl font-bold">
+                {projects.reduce((sum, p) => sum + p.participant_count, 0).toLocaleString()}
+              </p>
             </div>
-          </CardHeader>
+          </div>
         </Card>
       </div>
 
-      {/* Audit Log */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Audit Log</CardTitle>
-          <CardDescription>
-            Complete history of data access and consent changes
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {auditLogs.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">No activity yet</p>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Action</TableHead>
-                  <TableHead>Scope</TableHead>
-                  <TableHead>Actor</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {auditLogs.map((log) => (
-                  <TableRow key={log.id}>
-                    <TableCell className="text-sm">
-                      {new Date(log.created_at).toLocaleDateString()}
-                      <br />
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(log.created_at).toLocaleTimeString()}
-                      </span>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={
-                        log.action.includes("GRANT") ? "default" :
-                        log.action.includes("REVOKE") ? "outline" :
-                        "secondary"
-                      }>
-                        {log.action}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">{log.scope}</TableCell>
-                    <TableCell className="text-sm text-muted-foreground">{log.actor}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+      {/* Research Projects */}
+      <div className="space-y-4">
+        {projects.map((project) => {
+          const isConsented = hasConsented(project.id);
+          const isExpanded = expandedProjects.has(project.id);
+
+          return (
+            <Card key={project.id} className={`p-6 ${isConsented ? "border-primary bg-primary/5" : ""}`}>
+              <div className="space-y-4">
+                {/* Header */}
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h3 className="text-xl font-semibold">{project.name}</h3>
+                      {isConsented && (
+                        <Badge variant="default" className="flex items-center gap-1">
+                          <CheckCircle2 className="h-3 w-3" />
+                          Active
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                      <Building2 className="h-4 w-4" />
+                      {project.institute}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={isConsented}
+                    onCheckedChange={() => handleToggleConsent(project)}
+                  />
+                </div>
+
+                {/* Quick Info */}
+                <div className="flex flex-wrap gap-2">
+                  <Badge variant="outline" className="flex items-center gap-1">
+                    <Users className="h-3 w-3" />
+                    {project.participant_count.toLocaleString()} participants
+                  </Badge>
+                  
+                  {project.compensation_type === "monetary" && (
+                    <Badge variant="outline" className="flex items-center gap-1 bg-green-500/10 text-green-700 border-green-200">
+                      <DollarSign className="h-3 w-3" />
+                      {project.compensation_value}
+                    </Badge>
+                  )}
+                  
+                  {project.compensation_type === "insights" && (
+                    <Badge variant="outline" className="flex items-center gap-1 bg-blue-500/10 text-blue-700 border-blue-200">
+                      <Sparkles className="h-3 w-3" />
+                      {project.compensation_value}
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Expandable Details */}
+                <Collapsible open={isExpanded} onOpenChange={() => toggleExpanded(project.id)}>
+                  <CollapsibleTrigger className="w-full">
+                    <Button variant="ghost" size="sm" className="w-full flex items-center justify-between">
+                      <span className="text-sm">View details</span>
+                      {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    </Button>
+                  </CollapsibleTrigger>
+                  
+                  <CollapsibleContent className="space-y-4 pt-4">
+                    <div>
+                      <h4 className="font-medium mb-2">About this study</h4>
+                      <p className="text-sm text-muted-foreground">{project.description}</p>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium mb-2">Data requested</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {project.data_requested.map((data) => (
+                          <Badge key={data} variant="secondary">
+                            <span className="mr-1">{getDataTypeIcon(data)}</span>
+                            {data.replace(/_/g, " ")}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="font-medium mb-2">What you get</h4>
+                      <ul className="space-y-2">
+                        {project.benefits.map((benefit, idx) => (
+                          <li key={idx} className="flex items-start gap-2 text-sm">
+                            <CheckCircle2 className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+                            <span>{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+
+      {activeConsentCount === 0 && (
+        <Card className="p-8 text-center border-dashed">
+          <div className="max-w-md mx-auto">
+            <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No active research consents</h3>
+            <p className="text-sm text-muted-foreground">
+              Start contributing to research projects above to help advance health science and earn benefits.
+            </p>
+          </div>
+        </Card>
+      )}
     </div>
   );
 };

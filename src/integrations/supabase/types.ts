@@ -333,6 +333,96 @@ export type Database = {
         }
         Relationships: []
       }
+      project_consents: {
+        Row: {
+          consented_at: string | null
+          data_shared: string[]
+          id: string
+          project_id: string
+          revoked_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          consented_at?: string | null
+          data_shared: string[]
+          id?: string
+          project_id: string
+          revoked_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          consented_at?: string | null
+          data_shared?: string[]
+          id?: string
+          project_id?: string
+          revoked_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_consents_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "research_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_consents_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      research_projects: {
+        Row: {
+          benefits: string[]
+          compensation_type: string | null
+          compensation_value: string | null
+          created_at: string | null
+          data_requested: string[]
+          description: string
+          id: string
+          institute: string
+          name: string
+          participant_count: number | null
+          status: string
+          updated_at: string | null
+        }
+        Insert: {
+          benefits: string[]
+          compensation_type?: string | null
+          compensation_value?: string | null
+          created_at?: string | null
+          data_requested: string[]
+          description: string
+          id?: string
+          institute: string
+          name: string
+          participant_count?: number | null
+          status?: string
+          updated_at?: string | null
+        }
+        Update: {
+          benefits?: string[]
+          compensation_type?: string | null
+          compensation_value?: string | null
+          created_at?: string | null
+          data_requested?: string[]
+          description?: string
+          id?: string
+          institute?: string
+          name?: string
+          participant_count?: number | null
+          status?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       uploads: {
         Row: {
           ai_summary: Json | null

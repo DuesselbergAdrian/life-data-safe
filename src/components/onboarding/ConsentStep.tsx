@@ -111,34 +111,11 @@ export const ConsentStep = ({ userId, onComplete, initialData }: ConsentStepProp
         </div>
       </div>
 
-      <div className="space-y-4 border rounded-lg p-4">
-        <h3 className="font-medium">Optional Data Sharing (You can change these later)</h3>
-        
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label>Share anonymized health data</Label>
-            <p className="text-sm text-muted-foreground">
-              Help improve health research with anonymized insights
-            </p>
-          </div>
-          <Switch
-            checked={shareAnonymized}
-            onCheckedChange={setShareAnonymized}
-          />
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <Label>Share with private circle</Label>
-            <p className="text-sm text-muted-foreground">
-              Allow trusted contacts to see selected health metrics
-            </p>
-          </div>
-          <Switch
-            checked={sharePrivateCircle}
-            onCheckedChange={setSharePrivateCircle}
-          />
-        </div>
+      <div className="bg-accent/50 border rounded-lg p-4">
+        <h3 className="font-medium mb-2">What's next?</h3>
+        <p className="text-sm text-muted-foreground">
+          After completing setup, you'll be able to choose specific research projects to share your data with. Each project offers unique benefits and compensation.
+        </p>
       </div>
 
       <div className="bg-muted/50 p-4 rounded-lg text-sm text-muted-foreground">
