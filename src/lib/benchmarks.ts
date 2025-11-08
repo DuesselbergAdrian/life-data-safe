@@ -39,28 +39,48 @@ export function benchmark(value: number, metric: MetricType): BenchmarkResult {
   }
 }
 
-export function generateRecommendations(metrics: Record<string, number>): string[] {
-  const tips: string[] = [];
+export interface Recommendation {
+  action: string;
+  why: string;
+}
+
+export function generateRecommendations(metrics: Record<string, number>): Recommendation[] {
+  const tips: Recommendation[] = [];
   
   if (metrics.exerciseMin < 30) {
-    tips.push("Add a 20–30 min brisk walk before dinner to boost HRV and sleep quality.");
-  }
-  
-  if (metrics.kcal > 2500) {
-    tips.push("Aim for a higher-protein dinner (~30g) to improve satiety and reduce late snacks.");
+    tips.push({
+      action: "Add a 20–30 min brisk walk before dinner",
+      why: "Your exercise is 13 min below the recommended daily amount. Light movement boosts HRV and improves sleep quality."
+    });
   }
   
   if (metrics.hrv < 50) {
-    tips.push("Keep tonight's workout easy (Zone 2) and add 10 minutes of wind-down breathing.");
+    tips.push({
+      action: "Keep tonight's workout easy (Zone 2) and add 10 min of breathing",
+      why: "Your HRV is 14 points below optimal recovery range. Light training and breathwork help your nervous system reset."
+    });
   }
   
   if (metrics.rhr > 65) {
-    tips.push("Hydrate + 10k easy steps; avoid hard intervals today.");
+    tips.push({
+      action: "Hydrate well and aim for 10k easy steps today",
+      why: "Your resting heart rate is elevated by 7 bpm. Gentle movement and hydration support cardiovascular recovery."
+    });
   }
   
   if (metrics.nutrition < 70) {
-    tips.push("Swap one processed snack for fruit + nuts; target 25–30g fiber/day.");
+    tips.push({
+      action: "Swap one processed snack for fruit + nuts today",
+      why: "Your nutrition score is 10 points below target. Small swaps improve micronutrient intake and energy levels."
+    });
   }
   
-  return tips.slice(0, 5);
+  if (metrics.kcal > 2500) {
+    tips.push({
+      action: "Aim for a higher-protein dinner (~30g protein)",
+      why: "You're 400 kcal above your daily target. Protein increases satiety and reduces late-night snacking."
+    });
+  }
+  
+  return tips.slice(0, 3);
 }

@@ -1,29 +1,37 @@
 import { Card } from "@/components/ui/card";
 import { Lightbulb } from "lucide-react";
+import { Recommendation } from "@/lib/benchmarks";
 
 interface TipsListProps {
-  tips: string[];
+  tips: Recommendation[];
 }
 
 export const TipsList = ({ tips }: TipsListProps) => {
   if (tips.length === 0) return null;
 
   return (
-    <Card className="glass p-6">
-      <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Lightbulb className="h-5 w-5 text-primary" />
-          <h3 className="text-lg font-semibold">Recommendations</h3>
+    <Card className="glass p-8 border-2">
+      <div className="space-y-6">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-xl bg-primary/10">
+            <Lightbulb className="h-6 w-6 text-primary" />
+          </div>
+          <h3 className="text-2xl font-semibold tracking-tight">Your Recommendations</h3>
         </div>
         
-        <ul className="space-y-3">
+        <div className="space-y-5">
           {tips.map((tip, idx) => (
-            <li key={idx} className="flex gap-3 text-sm text-foreground/90 leading-relaxed">
-              <span className="text-primary font-semibold flex-shrink-0">{idx + 1}.</span>
-              <span>{tip}</span>
-            </li>
+            <div key={idx} className="flex gap-4 group">
+              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm group-hover:bg-primary/20 transition-colors">
+                {idx + 1}
+              </div>
+              <div className="space-y-1.5 flex-1">
+                <p className="font-medium text-base leading-snug">{tip.action}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{tip.why}</p>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       </div>
     </Card>
   );

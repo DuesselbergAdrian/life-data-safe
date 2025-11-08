@@ -54,7 +54,12 @@ const generateMockBlocks = (): DayBlock[] => {
 };
 
 const OverviewMain = ({ userId }: OverviewMainProps) => {
-  const { phase, scheduleTransition } = usePhase('sync');
+  // Check if phases have been run today
+  const getLastRunDate = () => localStorage.getItem('overview_last_run');
+  const setLastRunDate = () => localStorage.setItem('overview_last_run', new Date().toDateString());
+  const shouldRunPhases = getLastRunDate() !== new Date().toDateString();
+  
+  const { phase, scheduleTransition } = usePhase(shouldRunPhases ? 'sync' : 'overview');
   const [providers, setProviders] = useState<ProviderState[]>(
     PROVIDERS.map(p => ({ ...p, state: 'queued' as SyncState, progress: 0 }))
   );
@@ -134,6 +139,13 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
     }
   }, [phase, scheduleTransition]);
 
+  // Mark phases as complete when reaching overview
+  useEffect(() => {
+    if (phase === 'overview' && shouldRunPhases) {
+      setLastRunDate();
+    }
+  }, [phase, shouldRunPhases]);
+
   // Mock metrics
   const metrics = {
     nutrition: 72,
@@ -191,15 +203,17 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
         <p className="text-muted-foreground">A complete view of your health today</p>
       </div>
 
+      <TipsList tips={generateRecommendations(metrics)} />
+
       <DayTimeline blocks={generateMockBlocks()} />
 
       <SupercutPanel />
 
       <div>
-        <h3 className="text-xl font-semibold mb-4">Today's Metrics</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <h3 className="text-2xl font-semibold mb-6 tracking-tight">Health Metrics</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <BenchmarkedMetricCard
-            title="Nutrition Score"
+            title="Nutrition"
             value={metrics.nutrition.toString()}
             delta={5}
             sparkline={[65, 68, 70, 72, 69, 71, 72]}
@@ -251,10 +265,93 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
             benchmark={{ label: 'Good', percentile: 65, context: 'Top 30% peers' }}
             icon={<Moon className="h-5 w-5" />}
           />
+          <BenchmarkedMetricCard
+            title="Steps"
+            value="8,234"
+            delta={12}
+            sparkline={[7200, 8100, 7800, 8500, 8000, 7900, 8234]}
+            benchmark={{ label: 'Good', percentile: 70, context: 'Top 30% peers' }}
+            icon={<Activity className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Water"
+            value="2.1"
+            unit="L"
+            delta={-3}
+            sparkline={[2.3, 2.2, 2.4, 2.0, 2.3, 2.2, 2.1]}
+            benchmark={{ label: 'Medium', percentile: 50, context: 'Around average' }}
+            icon={<Activity className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Active Energy"
+            value="412"
+            unit="kcal"
+            delta={15}
+            sparkline={[380, 350, 390, 420, 400, 380, 412]}
+            benchmark={{ label: 'Good', percentile: 68, context: 'Top 30% peers' }}
+            icon={<TrendingUp className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Max HR"
+            value="156"
+            unit="bpm"
+            delta={8}
+            sparkline={[142, 148, 152, 158, 150, 154, 156]}
+            benchmark={{ label: 'Good', percentile: 72, context: 'Top 30% peers' }}
+            icon={<Heart className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Avg HR"
+            value="72"
+            unit="bpm"
+            delta={-2}
+            sparkline={[75, 74, 73, 72, 73, 72, 72]}
+            benchmark={{ label: 'Good', percentile: 65, context: 'Top 30% peers' }}
+            icon={<Heart className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="VO2 Max"
+            value="48.5"
+            unit="ml/kg/min"
+            delta={3}
+            sparkline={[46, 46.5, 47, 47.8, 48, 48.2, 48.5]}
+            benchmark={{ label: 'Good', percentile: 75, context: 'Top 25% peers' }}
+            icon={<TrendingUp className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Sleep Score"
+            value="82"
+            delta={-4}
+            sparkline={[85, 84, 86, 88, 84, 83, 82]}
+            benchmark={{ label: 'Good', percentile: 70, context: 'Top 30% peers' }}
+            icon={<Moon className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Recovery"
+            value="68"
+            delta={-10}
+            sparkline={[75, 72, 78, 80, 74, 70, 68]}
+            benchmark={{ label: 'Medium', percentile: 55, context: 'Around average' }}
+            icon={<Activity className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Stress"
+            value="42"
+            delta={5}
+            sparkline={[38, 40, 39, 41, 40, 41, 42]}
+            benchmark={{ label: 'Medium', percentile: 50, context: 'Around average' }}
+            icon={<TrendingUp className="h-5 w-5" />}
+          />
+          <BenchmarkedMetricCard
+            title="Readiness"
+            value="75"
+            delta={-8}
+            sparkline={[82, 80, 83, 85, 80, 78, 75]}
+            benchmark={{ label: 'Good', percentile: 65, context: 'Top 35% peers' }}
+            icon={<Activity className="h-5 w-5" />}
+          />
         </div>
       </div>
-
-      <TipsList tips={generateRecommendations(metrics)} />
     </div>
   );
 };
