@@ -5,6 +5,7 @@ import { Heart, Activity, Moon, Zap, Shield, Lock } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { ActivityItem } from "@/components/ActivityItem";
 import heroImage from "@/assets/hero-health-unified.jpg";
+import { DataUnificationAnimation } from "@/components/landing/DataUnificationAnimation";
 
 const Landing = () => {
   return (
@@ -96,6 +97,9 @@ const Landing = () => {
           </div>
         </div>
       </section>
+
+      {/* Data Unification Animation */}
+      <DataUnificationAnimation />
 
       {/* Key Stats Demo */}
       <section className="container mx-auto px-6 py-16">
