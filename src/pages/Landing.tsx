@@ -37,8 +37,8 @@ const Landing = () => {
             alt="Person on street using Meta smart glasses, AirPods, and smartwatch to collect and manage health data on mobile device" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/80 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-background/50" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-background/30 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background/40 via-transparent to-transparent" />
         </div>
 
         {/* Content */}
