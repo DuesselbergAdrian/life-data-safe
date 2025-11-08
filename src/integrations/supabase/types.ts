@@ -81,6 +81,9 @@ export type Database = {
       }
       consents: {
         Row: {
+          accepted_privacy: boolean | null
+          accepted_terms: boolean | null
+          created_at: string | null
           id: string
           share_anonymized: boolean
           share_communities: boolean
@@ -89,6 +92,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          accepted_privacy?: boolean | null
+          accepted_terms?: boolean | null
+          created_at?: string | null
           id?: string
           share_anonymized?: boolean
           share_communities?: boolean
@@ -97,6 +103,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          accepted_privacy?: boolean | null
+          accepted_terms?: boolean | null
+          created_at?: string | null
           id?: string
           share_anonymized?: boolean
           share_communities?: boolean
@@ -154,6 +163,47 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "contacts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      device_connections: {
+        Row: {
+          access_token: string
+          created_at: string | null
+          id: string
+          last_sync_at: string | null
+          metrics_json: Json | null
+          provider: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          access_token: string
+          created_at?: string | null
+          id?: string
+          last_sync_at?: string | null
+          metrics_json?: Json | null
+          provider: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          access_token?: string
+          created_at?: string | null
+          id?: string
+          last_sync_at?: string | null
+          metrics_json?: Json | null
+          provider?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "device_connections_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -238,30 +288,48 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          birth_year: number | null
+          country: string | null
           created_at: string
           email: string
+          height_cm: number | null
           id: string
           impact_points: number
+          interests: string[] | null
           name: string | null
+          onboarding_completed: boolean | null
           updated_at: string
+          weight_kg: number | null
         }
         Insert: {
           avatar_url?: string | null
+          birth_year?: number | null
+          country?: string | null
           created_at?: string
           email: string
+          height_cm?: number | null
           id: string
           impact_points?: number
+          interests?: string[] | null
           name?: string | null
+          onboarding_completed?: boolean | null
           updated_at?: string
+          weight_kg?: number | null
         }
         Update: {
           avatar_url?: string | null
+          birth_year?: number | null
+          country?: string | null
           created_at?: string
           email?: string
+          height_cm?: number | null
           id?: string
           impact_points?: number
+          interests?: string[] | null
           name?: string | null
+          onboarding_completed?: boolean | null
           updated_at?: string
+          weight_kg?: number | null
         }
         Relationships: []
       }

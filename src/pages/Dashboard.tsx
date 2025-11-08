@@ -42,12 +42,18 @@ const Dashboard = () => {
 
       setUser(session.user);
 
-      // Fetch profile
+      // Fetch profile and check onboarding
       const { data: profileData } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", session.user.id)
         .single();
+
+      // Redirect to onboarding if not completed
+      if (profileData && !profileData.onboarding_completed) {
+        navigate("/onboarding");
+        return;
+      }
 
       setProfile(profileData);
       setLoading(false);
