@@ -128,12 +128,12 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
             <AreaChart data={data}>
               <defs>
                 <linearGradient id="colorSteps" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0}/>
                 </linearGradient>
                 <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="hsl(var(--accent))" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="hsl(var(--accent))" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.2}/>
+                  <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0}/>
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -146,7 +146,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
                 yAxisId="left"
                 type="monotone"
                 dataKey="steps"
-                stroke="hsl(var(--primary))"
+                stroke="hsl(var(--muted-foreground))"
                 fillOpacity={1}
                 fill="url(#colorSteps)"
                 name="Steps"
@@ -155,7 +155,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
                 yAxisId="right"
                 type="monotone"
                 dataKey="activeMinutes"
-                stroke="hsl(var(--accent))"
+                stroke="hsl(var(--muted-foreground))"
                 fillOpacity={1}
                 fill="url(#colorActive)"
                 name="Active Minutes"
@@ -187,18 +187,18 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
                 yAxisId="left"
                 type="monotone"
                 dataKey="rhr"
-                stroke="hsl(var(--destructive))"
+                stroke="hsl(var(--muted-foreground))"
                 strokeWidth={2}
-                dot={{ fill: "hsl(var(--destructive))", r: 4 }}
+                dot={{ fill: "hsl(var(--muted-foreground))", r: 4 }}
                 name="Resting HR (bpm)"
               />
               <Line
                 yAxisId="right"
                 type="monotone"
                 dataKey="hrv"
-                stroke="hsl(var(--accent))"
+                stroke="hsl(var(--muted-foreground))"
                 strokeWidth={2}
-                dot={{ fill: "hsl(var(--accent))", r: 4 }}
+                dot={{ fill: "hsl(var(--muted-foreground))", r: 4 }}
                 name="HRV (ms)"
               />
             </LineChart>
@@ -226,7 +226,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
                 <Legend />
                 <Bar
                   dataKey="sleepScore"
-                  fill="hsl(var(--accent))"
+                  fill="hsl(var(--muted-foreground))"
                   radius={[4, 4, 0, 0]}
                   name="Sleep Score"
                 />
@@ -249,8 +249,8 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
               <AreaChart data={data}>
                 <defs>
                   <linearGradient id="colorStress" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--warning))" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(var(--warning))" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="hsl(var(--muted-foreground))" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
@@ -261,7 +261,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
                 <Area
                   type="monotone"
                   dataKey="stressLevel"
-                  stroke="hsl(var(--warning))"
+                  stroke="hsl(var(--muted-foreground))"
                   fillOpacity={1}
                   fill="url(#colorStress)"
                   name="Stress Level"
