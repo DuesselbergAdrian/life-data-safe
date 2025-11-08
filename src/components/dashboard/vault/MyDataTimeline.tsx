@@ -54,9 +54,8 @@ export const MyDataTimeline = () => {
                   <Badge variant="outline" className="text-xs mt-1">{item.source}</Badge>
                 </div>
               </div>
-              <div className="flex items-baseline justify-between">
+              <div>
                 <p className="font-semibold text-2xl">{item.value}</p>
-                <p className="text-xs text-muted-foreground">{item.time}</p>
               </div>
             </div>
           ))}
