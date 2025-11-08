@@ -72,8 +72,16 @@ export default {
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        md: "calc(var(--radius) - 4px)",
+        sm: "calc(var(--radius) - 8px)",
+        xl: "1.5rem",
+      },
+      boxShadow: {
+        subtle: "var(--shadow-subtle)",
+        card: "var(--shadow-card)",
+      },
+      transitionDuration: {
+        DEFAULT: "var(--transition)",
       },
       keyframes: {
         "accordion-down": {

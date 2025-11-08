@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Heart, LogOut, User as UserIcon, Download, Trash2, Loader2 } from "lucide-react";
+import { LogOut, Download, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import OverviewTab from "@/components/dashboard/OverviewTab";
 import SyncTab from "@/components/dashboard/SyncTab";
@@ -170,48 +170,42 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Heart className="h-8 w-8 text-primary" />
-            <span className="text-2xl font-bold">Health Vault</span>
-          </div>
+      <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
+        <div className="container mx-auto px-6 h-16 flex items-center justify-between">
+          <span className="text-xl font-semibold tracking-tight">Health Vault</span>
 
-          <div className="flex items-center gap-4">
-            <Badge variant="outline" className="bg-accent/10 text-accent border-accent/20">
-              {profile?.impact_points || 0} points
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="text-xs font-medium">
+              {profile?.impact_points || 0} pts
             </Badge>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <Avatar>
-                    <AvatarFallback>
+                <Button variant="ghost" size="sm" className="h-9 w-9 rounded-full p-0">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="text-xs">
                       {user?.email?.substring(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuLabel className="text-xs font-medium text-muted-foreground">
+                  {user?.email}
+                </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem disabled>
-                  <UserIcon className="mr-2 h-4 w-4" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExportData}>
+                <DropdownMenuItem onClick={handleExportData} className="text-sm">
                   <Download className="mr-2 h-4 w-4" />
-                  Export Data
+                  Export data
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleDeleteAccount} className="text-destructive">
+                <DropdownMenuItem onClick={handleDeleteAccount} className="text-sm text-destructive">
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete Account
+                  Delete account
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleSignOut}>
+                <DropdownMenuItem onClick={handleSignOut} className="text-sm">
                   <LogOut className="mr-2 h-4 w-4" />
-                  Sign Out
+                  Sign out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -220,16 +214,16 @@ const Dashboard = () => {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-7 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="sync">Sync</TabsTrigger>
-            <TabsTrigger value="trends">Trends</TabsTrigger>
-            <TabsTrigger value="consent">Consent</TabsTrigger>
-            <TabsTrigger value="social">Social</TabsTrigger>
-            <TabsTrigger value="communities">Communities</TabsTrigger>
-            <TabsTrigger value="impact">Impact</TabsTrigger>
+      <div className="container mx-auto px-6 py-8">
+        <Tabs defaultValue="overview" className="space-y-8">
+          <TabsList className="inline-flex h-9 items-center justify-center rounded-xl bg-muted p-1 text-muted-foreground">
+            <TabsTrigger value="overview" className="text-sm">Overview</TabsTrigger>
+            <TabsTrigger value="sync" className="text-sm">Sync</TabsTrigger>
+            <TabsTrigger value="trends" className="text-sm">Trends</TabsTrigger>
+            <TabsTrigger value="consent" className="text-sm">Consent</TabsTrigger>
+            <TabsTrigger value="social" className="text-sm">Social</TabsTrigger>
+            <TabsTrigger value="communities" className="text-sm">Communities</TabsTrigger>
+            <TabsTrigger value="impact" className="text-sm">Impact</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">

@@ -2,26 +2,29 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { ConsentStep } from "@/components/onboarding/ConsentStep";
-import { ProfileStep } from "@/components/onboarding/ProfileStep";
-import { DeviceStep } from "@/components/onboarding/DeviceStep";
-import { VideoStep } from "@/components/onboarding/VideoStep";
+import { Check, ChevronRight, Apple, Watch, Shield, Glasses } from "lucide-react";
+import { ProviderTile } from "@/components/ProviderTile";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
 
-const STEPS = [
-  { id: 1, name: "Consent", component: ConsentStep },
-  { id: 2, name: "Profile", component: ProfileStep },
-  { id: 3, name: "Devices", component: DeviceStep },
-  { id: 4, name: "Video", component: VideoStep },
+const PROVIDERS = [
+  { id: "apple-health", name: "Apple Health", description: "iOS health data", icon: <Apple className="h-6 w-6" /> },
+  { id: "android-health", name: "Android Health", description: "Google Fit data", icon: <Shield className="h-6 w-6" /> },
+  { id: "apple-watch", name: "Apple Watch", description: "Activity & vitals", icon: <Watch className="h-6 w-6" /> },
+  { id: "generic-watch", name: "Other Watch", description: "Bluetooth watch", icon: <Watch className="h-6 w-6" /> },
+  { id: "oura", name: "Oura Ring", description: "Sleep & readiness", icon: <Shield className="h-6 w-6" /> },
+  { id: "galaxy-ring", name: "Galaxy Ring", description: "Samsung health", icon: <Shield className="h-6 w-6" /> },
+  { id: "meta-glasses", name: "Meta Glasses", description: "Biometrics", icon: <Glasses className="h-6 w-6" /> },
+  { id: "google-glasses", name: "Google Glasses", description: "Activity data", icon: <Glasses className="h-6 w-6" /> },
 ];
 
 const Onboarding = () => {
-  const [currentStep, setCurrentStep] = useState(1);
+  const [step, setStep] = useState<"select" | "authorize" | "complete">("select");
+  const [selected, setSelected] = useState<string[]>([]);
+  const [connected, setConnected] = useState<string[]>([]);
   const [userId, setUserId] = useState<string | null>(null);
-  const [stepData, setStepData] = useState<Record<number, any>>({});
-  const [canContinue, setCanContinue] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -35,140 +38,191 @@ const Onboarding = () => {
       navigate("/auth");
       return;
     }
-    
     setUserId(session.user.id);
-    
-    // Check if already completed
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("onboarding_completed")
-      .eq("id", session.user.id)
-      .single();
-    
-    if (profile?.onboarding_completed) {
-      navigate("/dashboard");
-    }
   };
 
-  const handleStepComplete = (stepId: number, data: any, valid: boolean) => {
-    setStepData(prev => ({ ...prev, [stepId]: data }));
-    setCanContinue(valid);
+  const toggleProvider = (id: string) => {
+    setSelected(prev => 
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    );
   };
 
-  const handleNext = () => {
-    if (currentStep < STEPS.length) {
-      setCurrentStep(currentStep + 1);
-      setCanContinue(false);
-    } else {
-      finishOnboarding();
-    }
-  };
-
-  const handleBack = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    }
-  };
-
-  const finishOnboarding = async () => {
+  const handleConnect = async (providerId: string) => {
     if (!userId) return;
     
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ onboarding_completed: true })
-        .eq("id", userId);
-      
-      if (error) throw error;
-      
-      await supabase.from("audit_logs").insert({
+      await supabase.from("device_connections").insert({
         user_id: userId,
-        action: "ONBOARDING_COMPLETE",
-        scope: "account",
-        details: { completed_at: new Date().toISOString() }
+        provider: providerId,
+        status: "connected",
+        access_token: "mock_token",
+        metrics_json: {}
       });
+
+      setConnected(prev => [...prev, providerId]);
       
       toast({
-        title: "Welcome to Health Vault!",
-        description: "Your account is ready to use.",
+        title: "Connected",
+        description: `${PROVIDERS.find(p => p.id === providerId)?.name} connected successfully.`,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleComplete = async () => {
+    if (!userId) return;
+    
+    try {
+      await supabase.from("profiles").update({ onboarding_completed: true }).eq("id", userId);
+      
+      toast({
+        title: "All set",
+        description: "Your data will start syncing.",
       });
       
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error completing onboarding:", error);
-      toast({
-        title: "Error",
-        description: "Failed to complete onboarding. Please try again.",
-        variant: "destructive",
-      });
+      console.error(error);
     }
   };
 
-  const CurrentStepComponent = STEPS[currentStep - 1].component;
-  const progress = (currentStep / STEPS.length) * 100;
+  if (step === "select") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="w-full max-w-5xl space-y-8">
+          <div className="text-center space-y-3">
+            <h1 className="text-4xl font-bold tracking-tight">Connect your sources</h1>
+            <p className="text-muted-foreground">Pick what you use. We'll guide the setup.</p>
+          </div>
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/5 flex items-center justify-center p-4">
-      <Card className="w-full max-w-3xl p-8 shadow-xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-4">Welcome to Health Vault</h1>
-          
-          {/* Stepper */}
-          <div className="flex items-center justify-between mb-4">
-            {STEPS.map((step, idx) => (
-              <div key={step.id} className="flex items-center flex-1">
-                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 ${
-                  currentStep >= step.id 
-                    ? "bg-primary border-primary text-primary-foreground" 
-                    : "border-muted-foreground/30 text-muted-foreground"
-                }`}>
-                  {step.id}
-                </div>
-                <div className={`flex-1 text-sm font-medium ml-2 ${
-                  currentStep >= step.id ? "text-primary" : "text-muted-foreground"
-                }`}>
-                  {step.name}
-                </div>
-                {idx < STEPS.length - 1 && (
-                  <div className={`h-0.5 w-full mx-2 ${
-                    currentStep > step.id ? "bg-primary" : "bg-muted"
-                  }`} />
-                )}
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {PROVIDERS.map(provider => (
+              <ProviderTile
+                key={provider.id}
+                name={provider.name}
+                description={provider.description}
+                icon={provider.icon}
+                selected={selected.includes(provider.id)}
+                onClick={() => toggleProvider(provider.id)}
+              />
             ))}
           </div>
-          
-          <Progress value={progress} className="h-2" />
-        </div>
 
-        {/* Step Content */}
-        <div className="mb-8">
-          {userId && (
-            <CurrentStepComponent
-              userId={userId}
-              onComplete={(data: any, valid: boolean) => handleStepComplete(currentStep, data, valid)}
-              initialData={stepData[currentStep]}
-            />
-          )}
+          <div className="flex justify-center gap-4 pt-4">
+            <Button variant="ghost" onClick={() => navigate("/dashboard")}>
+              Skip for now
+            </Button>
+            <Button 
+              size="lg" 
+              onClick={() => setStep("authorize")}
+              disabled={selected.length === 0}
+              className="min-w-32"
+            >
+              Continue
+              <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
         </div>
+      </div>
+    );
+  }
 
-        {/* Navigation */}
-        <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handleBack}
-            disabled={currentStep === 1}
-          >
-            Back
+  if (step === "authorize") {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <Card className="w-full max-w-3xl p-8 space-y-6">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">Authorize & sync</h2>
+            <p className="text-muted-foreground">Complete setup for each source</p>
+          </div>
+
+          <Accordion type="multiple" className="space-y-4">
+            {selected.map(providerId => {
+              const provider = PROVIDERS.find(p => p.id === providerId)!;
+              const isConnected = connected.includes(providerId);
+              
+              return (
+                <AccordionItem key={providerId} value={providerId} className="border rounded-lg px-4">
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex items-center gap-3">
+                      {provider.icon}
+                      <span className="font-medium">{provider.name}</span>
+                      {isConnected && (
+                        <Badge variant="outline" className="ml-auto mr-2 bg-primary/10 border-primary/20">
+                          <Check className="h-3 w-3 mr-1" />
+                          Connected
+                        </Badge>
+                      )}
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-4 pt-4">
+                    <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">
+                      <li>Open the {provider.name} app on your device</li>
+                      <li>Grant read permissions for health metrics</li>
+                      <li>Confirm background sync is enabled</li>
+                    </ol>
+                    {!isConnected ? (
+                      <Button onClick={() => handleConnect(providerId)} size="sm">
+                        Authorize
+                      </Button>
+                    ) : (
+                      <Button variant="ghost" size="sm">
+                        Manage permissions
+                      </Button>
+                    )}
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+
+          <Card className="p-6 bg-muted/30 border-muted">
+            <h3 className="font-semibold mb-2">Upload a video (optional)</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Add a short video for motion or form analysis. Skip anytime.
+            </p>
+            <div className="flex gap-3">
+              <Button variant="outline" size="sm">Upload video</Button>
+              <Button variant="ghost" size="sm">Skip for now</Button>
+            </div>
+          </Card>
+
+          <div className="flex justify-end gap-3 pt-4">
+            <Button variant="ghost" onClick={() => setStep("select")}>
+              Back
+            </Button>
+            <Button 
+              onClick={() => setStep("complete")}
+              disabled={connected.length === 0}
+            >
+              Continue
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="text-center space-y-6 max-w-md">
+        <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+          <Check className="h-10 w-10 text-primary" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-3xl font-bold">All set</h2>
+          <p className="text-muted-foreground">Your data will start syncing.</p>
+        </div>
+        <div className="flex flex-col gap-3 pt-4">
+          <Button size="lg" onClick={handleComplete}>
+            Go to dashboard
           </Button>
-          <Button
-            onClick={handleNext}
-            disabled={!canContinue}
-          >
-            {currentStep === STEPS.length ? "Complete Setup" : "Continue"}
+          <Button variant="link" size="sm">
+            Manage connections
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };
