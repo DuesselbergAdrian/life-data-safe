@@ -15,28 +15,9 @@ const TIMELINE_DATA = [
 export const MyDataTimeline = () => {
   return (
     <Card className="glass">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <div>
-          <CardTitle className="text-lg font-semibold">My Stats</CardTitle>
-          <p className="text-sm text-muted-foreground mt-1">Unified view of all synced health data</p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Select defaultValue="all">
-            <SelectTrigger className="w-32 h-9">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All data</SelectItem>
-              <SelectItem value="activity">Activity</SelectItem>
-              <SelectItem value="sleep">Sleep</SelectItem>
-              <SelectItem value="heart">Heart</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button variant="outline" size="sm" className="h-9">
-            <Calendar className="h-4 w-4 mr-2" />
-            Filter
-          </Button>
-        </div>
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold">My Stats</CardTitle>
+        <p className="text-sm text-muted-foreground mt-1">Unified view of all synced health data</p>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
