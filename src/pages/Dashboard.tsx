@@ -127,20 +127,44 @@ const Dashboard = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      return;
-    }
+    if (!user?.id) return;
+
+    const confirmed = confirm(
+      "Are you absolutely sure you want to delete your account?\n\nThis will permanently delete:\n- All your health data\n- Device connections\n- Consents and research participation\n- Uploads and custom data\n- Your entire profile\n\nThis action CANNOT be undone."
+    );
+
+    if (!confirmed) return;
+
+    // Double confirmation
+    const doubleConfirm = confirm(
+      "Final confirmation: Click OK to permanently delete your account"
+    );
+
+    if (!doubleConfirm) return;
 
     try {
+      // Delete user profile and related data
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .delete()
+        .eq("id", user.id);
+
+      if (profileError) throw profileError;
+
+      // Sign out (deletion cascades will handle related records)
+      await supabase.auth.signOut();
+
       toast({
-        title: "Account deletion requested",
-        description: "Your request has been logged. Contact support for completion.",
+        title: "Account deleted",
+        description: "Your account and all data have been permanently deleted.",
       });
-      await handleSignOut();
+
+      navigate("/");
     } catch (error: any) {
+      console.error("Delete account error:", error);
       toast({
-        title: "Error",
-        description: error.message,
+        title: "Deletion failed",
+        description: error.message || "Failed to delete account. Please try signing out and contacting support.",
         variant: "destructive",
       });
     }

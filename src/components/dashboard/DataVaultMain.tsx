@@ -5,6 +5,7 @@ import { CustomUploads } from "./vault/CustomUploads";
 import { ConsentsManager } from "./vault/ConsentsManager";
 import { RewardsImpact } from "./vault/RewardsImpact";
 import { ExportDelete } from "./vault/ExportDelete";
+import { DevicesTab } from "./vault/DevicesTab";
 
 interface DataVaultMainProps {
   userId?: string;
@@ -21,6 +22,7 @@ const DataVaultMain = ({ userId }: DataVaultMainProps) => {
       <Tabs defaultValue="mydata" className="space-y-6">
         <TabsList className="inline-flex bg-muted/50 backdrop-blur">
           <TabsTrigger value="mydata" className="text-sm">My Data</TabsTrigger>
+          <TabsTrigger value="devices" className="text-sm">Devices</TabsTrigger>
           <TabsTrigger value="uploads" className="text-sm">Custom Uploads</TabsTrigger>
           <TabsTrigger value="consents" className="text-sm">Consents</TabsTrigger>
           <TabsTrigger value="rewards" className="text-sm">Rewards</TabsTrigger>
@@ -30,6 +32,10 @@ const DataVaultMain = ({ userId }: DataVaultMainProps) => {
         <TabsContent value="mydata" className="space-y-6">
           <MyDataTimeline />
           <ActivityDataTable />
+        </TabsContent>
+
+        <TabsContent value="devices">
+          <DevicesTab userId={userId} />
         </TabsContent>
 
         <TabsContent value="uploads">
@@ -45,7 +51,7 @@ const DataVaultMain = ({ userId }: DataVaultMainProps) => {
         </TabsContent>
 
         <TabsContent value="export">
-          <ExportDelete />
+          <ExportDelete userId={userId} />
         </TabsContent>
       </Tabs>
     </div>
