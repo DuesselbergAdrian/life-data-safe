@@ -39,7 +39,7 @@ const Landing = () => {
       </header>
 
       {/* Hero Section */}
-      <section className="relative container mx-auto px-6 pt-24 pb-16 min-h-[700px] flex flex-col items-center justify-center">
+      <section className="relative container mx-auto px-6 h-[80vh] flex flex-col items-center justify-center">
         {/* Background Animation */}
         <div className="absolute inset-0 z-0">
           <DataUnificationAnimation />

@@ -90,7 +90,7 @@ export const DataUnificationAnimation = () => {
   return (
     <div 
       ref={sectionRef}
-      className="relative h-[600px] flex items-center justify-center overflow-hidden"
+      className="relative h-full flex items-center justify-center overflow-hidden"
     >
       <div className="relative w-full h-full">
         {/* Scattered Logos */}
