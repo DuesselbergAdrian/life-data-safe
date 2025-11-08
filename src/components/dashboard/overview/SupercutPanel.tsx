@@ -16,7 +16,7 @@ export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
 
       // Simulate video generation/loading
       const loadTimer = setTimeout(() => {
-        setVideoUrl('https://www.youtube.com/embed/dsHCksGNbuU');
+        setVideoUrl('https://player.cloudinary.com/embed/?cloud_name=diqe550vg&public_id=Actual_2_ddoofi&profile=cld-default');
         setState('ready');
       }, 2000);
 
@@ -49,7 +49,7 @@ export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
           <h3 className="text-lg font-semibold">Supercut of Today</h3>
         </div>
 
-        <div className="relative rounded-xl overflow-hidden bg-muted shadow-lg mx-auto" style={{ aspectRatio: '9/16', maxWidth: '400px' }}>
+        <div className="relative rounded-xl overflow-hidden bg-muted shadow-lg mx-auto" style={{ aspectRatio: '9/16', maxWidth: '600px', width: '100%' }}>
           {videoUrl ? (
             <iframe
               src={videoUrl}
