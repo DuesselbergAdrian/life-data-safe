@@ -16,7 +16,7 @@ export const SupercutPanel = ({ delayMs = 3500 }: SupercutPanelProps) => {
 
       // Simulate video generation/loading
       const loadTimer = setTimeout(() => {
-        setVideoUrl('https://player.cloudinary.com/embed/?cloud_name=diqe550vg&public_id=Actual_2_ddoofi&profile=cld-default');
+        setVideoUrl('https://www.youtube.com/embed/dsHCksGNbuU');
         setState('ready');
       }, 2000);
 
