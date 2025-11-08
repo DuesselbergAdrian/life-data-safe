@@ -5,13 +5,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -53,25 +54,50 @@ const Auth = () => {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleSendOTP = async (e: React.FormEvent) => {
+  const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/`,
-        },
-      });
+      if (isSignUp) {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/onboarding`,
+          },
+        });
 
-      if (error) throw error;
+        if (error) throw error;
 
-      setOtpSent(true);
-      toast({
-        title: "Check your email! 📧",
-        description: "We've sent you a magic link to sign in.",
-      });
+        toast({
+          title: "Account created! 🎉",
+          description: "Complete your profile to get started.",
+        });
+        navigate("/onboarding");
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+
+        if (error) throw error;
+
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("onboarding_completed")
+            .eq("id", session.user.id)
+            .single();
+          
+          if (profile?.onboarding_completed) {
+            navigate("/dashboard");
+          } else {
+            navigate("/onboarding");
+          }
+        }
+      }
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -95,55 +121,54 @@ const Auth = () => {
 
         <Card className="p-8 shadow-xl">
           <div className="text-center mb-8">
-            <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="h-8 w-8 text-primary" />
-            </div>
             <h1 className="text-3xl font-bold mb-2">
-              {otpSent ? "Check Your Email" : "Welcome to Health Vault"}
+              {isSignUp ? "Create Account" : "Welcome Back"}
             </h1>
             <p className="text-muted-foreground">
-              {otpSent
-                ? "We've sent you a magic link. Click it to sign in instantly."
-                : "Sign in with your email - no password needed!"}
+              {isSignUp
+                ? "Sign up to start your health journey"
+                : "Sign in to access your Health Vault"}
             </p>
           </div>
 
-          {!otpSent ? (
-            <form onSubmit={handleSendOTP} className="space-y-4">
-              <div>
-                <Input
-                  type="email"
-                  placeholder="your@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full"
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? "Sending..." : "Send Magic Link"}
-              </Button>
-            </form>
-          ) : (
-            <div className="space-y-4">
-              <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 text-sm">
-                <p className="font-medium mb-1">Check your inbox</p>
-                <p className="text-muted-foreground">
-                  We sent an email to <strong>{email}</strong>. Click the link to sign in.
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setOtpSent(false);
-                  setEmail("");
-                }}
+          <form onSubmit={handleAuth} className="space-y-4">
+            <div>
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
                 className="w-full"
-              >
-                Use a different email
-              </Button>
+              />
             </div>
-          )}
+            <div>
+              <Input
+                type="password"
+                placeholder="Password (min 6 characters)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                className="w-full"
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
+            </Button>
+            
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={() => setIsSignUp(!isSignUp)}
+                className="text-sm text-primary hover:underline"
+              >
+                {isSignUp
+                  ? "Already have an account? Sign in"
+                  : "Don't have an account? Sign up"}
+              </button>
+            </div>
+          </form>
 
           <div className="mt-6 pt-6 border-t text-center text-xs text-muted-foreground space-x-4">
             <Link to="/terms" className="hover:text-primary">
