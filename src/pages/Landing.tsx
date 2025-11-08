@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Heart, Activity, Moon, Zap, Shield } from "lucide-react";
+import { Heart, Activity, Moon, Zap, Shield, Lock } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
 import { ActivityItem } from "@/components/ActivityItem";
+import heroImage from "@/assets/hero-health-unified.jpg";
 
 const Landing = () => {
   return (
@@ -38,20 +39,60 @@ const Landing = () => {
 
       {/* Hero Section */}
       <section className="container mx-auto px-6 pt-24 pb-16">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
-          <h1 className="text-6xl md:text-7xl font-bold tracking-tight leading-[1.1]">
-            Your health, unified.
-          </h1>
-          <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Own your data. See it live. Sync from the devices you already use.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <Button size="lg" className="px-8" asChild>
-              <Link to="/onboarding">Sync data</Link>
-            </Button>
-            <Button size="lg" variant="ghost" asChild>
-              <Link to="/auth">Explore demo</Link>
-            </Button>
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="space-y-6">
+              <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-[1.1]">
+                Your health, unified.
+              </h1>
+              <p className="text-xl text-muted-foreground leading-relaxed">
+                Own your data. See it live. Sync from the devices you already use.
+              </p>
+              <div className="flex flex-col sm:flex-row items-start gap-4 pt-4">
+                <Button size="lg" className="px-8" asChild>
+                  <Link to="/onboarding">Sync data</Link>
+                </Button>
+                <Button size="lg" variant="ghost" asChild>
+                  <Link to="/auth">Explore demo</Link>
+                </Button>
+              </div>
+            </div>
+            <div className="relative">
+              <img 
+                src={heroImage} 
+                alt="Unified health data dashboard" 
+                className="rounded-2xl shadow-2xl border border-border"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Problem & Vision Section */}
+      <section className="container mx-auto px-6 py-20 bg-muted/30">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-destructive/10 text-destructive text-sm font-medium mb-2">
+                <span className="h-2 w-2 rounded-full bg-destructive"></span>
+                Problem
+              </div>
+              <h2 className="text-3xl font-bold">Data locked in silos</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                Every day, Europeans generate millions of data points — from clinics, wearables, and daily life.
+                But that data is locked away in silos, disconnected from the people who created it.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
+                <Lock className="h-3 w-3" />
+                Vision
+              </div>
+              <h2 className="text-3xl font-bold">Your personal health vault</h2>
+              <p className="text-muted-foreground leading-relaxed">
+                Health Vault is Europe's platform for storing and managing personal health data — a personal, encrypted vault where your medical, wearable, and lifestyle data finally live together under your control.
+              </p>
+            </div>
           </div>
         </div>
       </section>
