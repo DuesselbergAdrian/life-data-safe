@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MyDataTimeline } from "./vault/MyDataTimeline";
+import { ActivityDataTable } from "./vault/ActivityDataTable";
 import { CustomUploads } from "./vault/CustomUploads";
 import { ConsentsManager } from "./vault/ConsentsManager";
 import { RewardsImpact } from "./vault/RewardsImpact";
@@ -26,8 +27,9 @@ const DataVaultMain = ({ userId }: DataVaultMainProps) => {
           <TabsTrigger value="export" className="text-sm">Export</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="mydata">
+        <TabsContent value="mydata" className="space-y-6">
           <MyDataTimeline />
+          <ActivityDataTable />
         </TabsContent>
 
         <TabsContent value="uploads">
