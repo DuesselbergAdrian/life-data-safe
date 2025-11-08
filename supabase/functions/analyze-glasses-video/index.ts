@@ -16,7 +16,7 @@ serve(async (req) => {
 
     console.log('Analyzing glasses video, extension:', file_extension);
 
-    const response = await fetch('https://a040a4ddeb66.ngrok-free.app/analyze/base64', {
+    const response = await fetch('https://48e6fd635bf2.ngrok-free.app/analyze/base64', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
