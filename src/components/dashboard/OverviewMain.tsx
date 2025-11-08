@@ -38,18 +38,59 @@ const generateMockBlocks = (): DayBlock[] => {
   const today = new Date().toISOString().split('T')[0];
   return [
     { 
-      start: `${today}T00:30:00`, 
-      end: `${today}T07:00:00`, 
+      start: `${today}T00:00:00`, 
+      end: `${today}T08:00:00`, 
       type: 'sleep',
-      meta: { efficiency: 87, hrv: 58 }
+      meta: { efficiency: 84, hrv: 52, deepSleep: '1h 45min', remSleep: '2h 12min' }
     },
-    { start: `${today}T07:15:00`, end: `${today}T07:35:00`, type: 'meal', meta: { meal: 'Breakfast: Skyr + granola', kcal: 310, source: 'Apple Health' } },
-    { start: `${today}T09:00:00`, end: `${today}T12:00:00`, type: 'work' },
-    { start: `${today}T12:15:00`, end: `${today}T12:45:00`, type: 'meal', meta: { meal: 'Lunch: Salmon bowl', kcal: 520, source: 'Manual' } },
-    { start: `${today}T13:00:00`, end: `${today}T17:00:00`, type: 'work' },
-    { start: `${today}T18:00:00`, end: `${today}T18:40:00`, type: 'exercise', meta: { activity: 'Zone 2 run', avgHR: 138, kcal: 380 } },
-    { start: `${today}T18:30:00`, end: `${today}T19:00:00`, type: 'meal', meta: { meal: 'Dinner: Chicken + veggies', kcal: 650, source: 'Oura' } },
-    { start: `${today}T19:30:00`, end: `${today}T23:00:00`, type: 'leisure' },
+    { 
+      start: `${today}T08:00:00`, 
+      end: `${today}T08:45:00`, 
+      type: 'leisure', 
+      meta: { activities: 'Watched TV, ate sandwich', screenTime: '35 min', meal: 'Sandwich + coffee', kcal: 420 } 
+    },
+    { 
+      start: `${today}T08:45:00`, 
+      end: `${today}T09:45:00`, 
+      type: 'leisure', 
+      meta: { activity: 'Commute', transport: 'Car/Train', steps: 1240 } 
+    },
+    { 
+      start: `${today}T09:45:00`, 
+      end: `${today}T10:30:00`, 
+      type: 'leisure', 
+      meta: { activity: 'Socializing', context: 'Coffee with colleagues', mood: 'Positive' } 
+    },
+    { 
+      start: `${today}T10:30:00`, 
+      end: `${today}T12:15:00`, 
+      type: 'work', 
+      meta: { posture: 'Sitting', standTime: '0 min', focusScore: 72 } 
+    },
+    { 
+      start: `${today}T12:15:00`, 
+      end: `${today}T12:45:00`, 
+      type: 'meal', 
+      meta: { meal: 'Lunch: Chicken salad', kcal: 580, protein: '35g', source: 'Apple Health' } 
+    },
+    { 
+      start: `${today}T12:45:00`, 
+      end: `${today}T14:00:00`, 
+      type: 'work', 
+      meta: { posture: 'Sitting', standTime: '0 min', screenTime: '1h 15min' } 
+    },
+    { 
+      start: `${today}T14:00:00`, 
+      end: `${today}T14:30:00`, 
+      type: 'exercise', 
+      meta: { activity: 'Light walk', avgHR: 105, steps: 3200, kcal: 140 } 
+    },
+    { 
+      start: `${today}T14:30:00`, 
+      end: new Date().toISOString(), 
+      type: 'work', 
+      meta: { posture: 'Sitting', standTime: '0 min', scrollTime: '45 min on TikTok', focusScore: 58 } 
+    },
   ];
 };
 
