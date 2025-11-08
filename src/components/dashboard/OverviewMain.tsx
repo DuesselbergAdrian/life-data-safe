@@ -100,9 +100,21 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
   const setLastRunDate = () => localStorage.setItem('overview_last_run', new Date().toDateString());
   const shouldRunPhases = getLastRunDate() !== new Date().toDateString();
   
+  // Get authorized providers from onboarding
+  const getAuthorizedProviders = (): ProviderKey[] => {
+    const stored = localStorage.getItem('authorized_providers');
+    return stored ? JSON.parse(stored) : ['glasses']; // Default to glasses if none set
+  };
+  
+  const authorizedProviders = getAuthorizedProviders();
+  
   const { phase, scheduleTransition } = usePhase(shouldRunPhases ? 'sync' : 'overview');
   const [providers, setProviders] = useState<ProviderState[]>(
-    PROVIDERS.map(p => ({ ...p, state: 'queued' as SyncState, progress: 0 }))
+    PROVIDERS.map(p => ({ 
+      ...p, 
+      state: authorizedProviders.includes(p.key) ? 'queued' as SyncState : 'notAuthorized' as SyncState, 
+      progress: 0 
+    }))
   );
 
   // Sync simulation
@@ -112,10 +124,12 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
     const timers: NodeJS.Timeout[] = [];
     const glassesTime = 5000;
 
-    // Start glasses immediately
-    setProviders(prev => prev.map(p => 
-      p.key === 'glasses' ? { ...p, state: 'syncing' } : p
-    ));
+    // Start glasses immediately if authorized
+    if (authorizedProviders.includes('glasses')) {
+      setProviders(prev => prev.map(p => 
+        p.key === 'glasses' ? { ...p, state: 'syncing' } : p
+      ));
+    }
 
     // Glasses progress
     const glassesInterval = setInterval(() => {
@@ -139,8 +153,8 @@ const OverviewMain = ({ userId }: OverviewMainProps) => {
     }, glassesTime);
     timers.push(glassesComplete);
 
-    // Start other providers with stagger
-    PROVIDERS.filter(p => p.key !== 'glasses').forEach((provider, idx) => {
+    // Start other providers with stagger (only authorized ones)
+    PROVIDERS.filter(p => p.key !== 'glasses' && authorizedProviders.includes(p.key)).forEach((provider, idx) => {
       const stagger = 300 + Math.random() * 300;
       const duration = 4000 + Math.floor(Math.random() * 8000);
       const minDuration = Math.max(duration, glassesTime + 1200);

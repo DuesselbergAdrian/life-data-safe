@@ -1,10 +1,10 @@
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { Check, Loader2, AlertCircle } from "lucide-react";
+import { Check, Loader2, AlertCircle, Clock, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type SyncState = 'queued' | 'syncing' | 'done' | 'error';
+export type SyncState = 'queued' | 'syncing' | 'done' | 'error' | 'notAuthorized';
 
 interface SyncCardProps {
   name: string;
@@ -36,12 +36,13 @@ export const SyncCard = ({ name, icon, state, progress = 0, isPrimary }: SyncCar
               {state === 'syncing' && 'Reading steps, HR, sleep...'}
               {state === 'done' && 'Last update: just now'}
               {state === 'error' && 'Connection failed'}
+              {state === 'notAuthorized' && 'Not authorized'}
             </p>
           </div>
         </div>
         
         {state === 'queued' && (
-          <Badge variant="outline" className="text-xs">Queued</Badge>
+          <Clock className="h-4 w-4 text-muted-foreground" />
         )}
         {state === 'syncing' && (
           <Loader2 className="h-4 w-4 animate-spin text-primary" />
@@ -54,10 +55,19 @@ export const SyncCard = ({ name, icon, state, progress = 0, isPrimary }: SyncCar
         {state === 'error' && (
           <AlertCircle className="h-4 w-4 text-health-bad" />
         )}
+        {state === 'notAuthorized' && (
+          <XCircle className="h-4 w-4 text-muted-foreground" />
+        )}
       </div>
       
       {state === 'syncing' && (
         <Progress value={progress} className="h-1" />
+      )}
+      
+      {state === 'notAuthorized' && (
+        <p className="text-xs text-muted-foreground mt-2">
+          Authorize in settings to sync this device
+        </p>
       )}
     </Card>
   );

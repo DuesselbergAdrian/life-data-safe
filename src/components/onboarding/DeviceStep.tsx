@@ -79,7 +79,24 @@ export const DeviceStep = ({ userId, onComplete, initialData }: DeviceStepProps)
         details: { provider: selectedProvider, metrics }
       });
 
-      setConnectedDevices(prev => [...prev, selectedProvider]);
+      const newConnectedDevices = [...connectedDevices, selectedProvider];
+      setConnectedDevices(newConnectedDevices);
+      
+      // Map device providers to Overview provider keys
+      const providerMap: Record<string, string> = {
+        'FITBIT': 'otherWatch',
+        'APPLE_HEALTH': 'appleHealth',
+        'GOOGLE_FIT': 'androidHealth',
+        'OURA': 'oura',
+        'WITHINGS': 'galaxyRing',
+        'MOCK': 'glasses',
+      };
+      
+      // Save authorized providers for Overview sync
+      const authorizedProviders = newConnectedDevices
+        .map(p => providerMap[p])
+        .filter(Boolean);
+      localStorage.setItem('authorized_providers', JSON.stringify(authorizedProviders));
       
       toast({
         title: "Device Connected! 🎉",

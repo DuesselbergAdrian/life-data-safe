@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Moon, Briefcase, Coffee, Utensils, Dumbbell } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,23 +26,6 @@ interface DayTimelineProps {
 }
 
 export const DayTimeline = ({ blocks }: DayTimelineProps) => {
-  const [selectedBlock, setSelectedBlock] = useState<DayBlock | null>(null);
-  const [pressTimer, setPressTimer] = useState<NodeJS.Timeout | null>(null);
-
-  const handlePress = (block: DayBlock) => {
-    const timer = setTimeout(() => {
-      setSelectedBlock(block);
-    }, 500);
-    setPressTimer(timer);
-  };
-
-  const handleRelease = () => {
-    if (pressTimer) {
-      clearTimeout(pressTimer);
-      setPressTimer(null);
-    }
-  };
-
   const getTimeFromISO = (iso: string) => {
     return new Date(iso).toLocaleTimeString('en-US', { 
       hour: '2-digit', 
@@ -59,14 +42,82 @@ export const DayTimeline = ({ blocks }: DayTimelineProps) => {
     return `${hours}h ${mins}m`;
   };
 
-  return (
-    <>
-      <Card className="glass p-6">
-        <div className="space-y-4">
-          <div>
-            <h3 className="text-lg font-semibold mb-1">Timeline</h3>
-            <p className="text-sm text-muted-foreground">Press and hold any segment for details</p>
+  const renderTooltipContent = (block: DayBlock) => {
+    const config = BLOCK_CONFIG[block.type];
+    
+    return (
+      <div className="space-y-2 min-w-[200px]">
+        <div className="flex items-center gap-2 pb-2 border-b border-border/50">
+          <config.icon className="h-4 w-4" />
+          <p className="font-semibold">{config.label}</p>
+        </div>
+        
+        <div className="text-xs text-muted-foreground">
+          {getTimeFromISO(block.start)} – {getTimeFromISO(block.end)} • {getDuration(block.start, block.end)}
+        </div>
+
+        {block.meta && (
+          <div className="space-y-1.5 pt-1 text-sm">
+            {block.type === 'sleep' && (
+              <>
+                <p>Efficiency: <span className="font-medium">{block.meta.efficiency}%</span></p>
+                <p>HRV: <span className="font-medium">{block.meta.hrv} ms</span></p>
+                {block.meta.deepSleep && <p>Deep Sleep: <span className="font-medium">{block.meta.deepSleep}</span></p>}
+                {block.meta.remSleep && <p>REM Sleep: <span className="font-medium">{block.meta.remSleep}</span></p>}
+              </>
+            )}
+            
+            {block.type === 'meal' && (
+              <>
+                <p className="font-medium">{block.meta.meal}</p>
+                <p>~{block.meta.kcal} kcal</p>
+                {block.meta.protein && <p>Protein: {block.meta.protein}</p>}
+                {block.meta.source && <p className="text-xs text-muted-foreground">Source: {block.meta.source}</p>}
+              </>
+            )}
+            
+            {block.type === 'exercise' && (
+              <>
+                <p className="font-medium">{block.meta.activity}</p>
+                {block.meta.avgHR && <p>Avg HR: {block.meta.avgHR} bpm</p>}
+                {block.meta.steps && <p>Steps: {block.meta.steps.toLocaleString()}</p>}
+                {block.meta.kcal && <p>~{block.meta.kcal} kcal burned</p>}
+              </>
+            )}
+            
+            {block.type === 'work' && (
+              <>
+                {block.meta.posture && <p>Posture: <span className="font-medium">{block.meta.posture}</span></p>}
+                {block.meta.standTime && <p>Stand Time: <span className="font-medium">{block.meta.standTime}</span></p>}
+                {block.meta.focusScore && <p>Focus Score: <span className="font-medium">{block.meta.focusScore}/100</span></p>}
+                {block.meta.scrollTime && <p className="text-health-bad">{block.meta.scrollTime}</p>}
+              </>
+            )}
+            
+            {block.type === 'leisure' && (
+              <>
+                {block.meta.activities && <p className="font-medium">{block.meta.activities}</p>}
+                {block.meta.activity && <p className="font-medium">{block.meta.activity}</p>}
+                {block.meta.context && <p className="text-muted-foreground">{block.meta.context}</p>}
+                {block.meta.screenTime && <p>Screen Time: {block.meta.screenTime}</p>}
+                {block.meta.steps && <p>Steps: {block.meta.steps.toLocaleString()}</p>}
+                {block.meta.transport && <p>Transport: {block.meta.transport}</p>}
+                {block.meta.mood && <p>Mood: {block.meta.mood}</p>}
+              </>
+            )}
           </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <Card className="glass p-6">
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold mb-1">Timeline</h3>
+          <p className="text-sm text-muted-foreground">Hover over segments to see details</p>
+        </div>
 
           <div className="relative">
             {/* Hour markers */}
@@ -77,106 +128,44 @@ export const DayTimeline = ({ blocks }: DayTimelineProps) => {
             </div>
 
             {/* Timeline bar */}
-            <div className="flex h-16 rounded-xl overflow-hidden border border-border">
-              {blocks.map((block, idx) => {
-                const config = BLOCK_CONFIG[block.type];
-                const Icon = config.icon;
-                
-                // Calculate duration in minutes for accurate width
-                const startMs = new Date(block.start).getTime();
-                const endMs = new Date(block.end).getTime();
-                const durationMinutes = (endMs - startMs) / 60000;
-                const width = (durationMinutes / (24 * 60)) * 100;
+            <TooltipProvider delayDuration={100}>
+              <div className="flex h-16 rounded-xl overflow-hidden border border-border">
+                {blocks.map((block, idx) => {
+                  const config = BLOCK_CONFIG[block.type];
+                  const Icon = config.icon;
+                  
+                  // Calculate duration in minutes for accurate width
+                  const startMs = new Date(block.start).getTime();
+                  const endMs = new Date(block.end).getTime();
+                  const durationMinutes = (endMs - startMs) / 60000;
+                  const width = (durationMinutes / (24 * 60)) * 100;
 
-                return (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "flex-shrink-0 flex items-center justify-center gap-2 cursor-pointer transition-all hover:brightness-110 border-r border-border/50",
-                      config.color
-                    )}
-                    style={{ width: `${width}%` }}
-                    onMouseDown={() => handlePress(block)}
-                    onMouseUp={handleRelease}
-                    onMouseLeave={handleRelease}
-                    onTouchStart={() => handlePress(block)}
-                    onTouchEnd={handleRelease}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {durationMinutes > 120 && (
-                      <span className="text-xs font-medium">{config.label}</span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                  return (
+                    <Tooltip key={idx}>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={cn(
+                            "flex-shrink-0 flex items-center justify-center gap-2 cursor-pointer transition-all hover:brightness-125 hover:scale-105 border-r border-border/50",
+                            config.color
+                          )}
+                          style={{ width: `${width}%` }}
+                        >
+                          <Icon className="h-4 w-4" />
+                          {durationMinutes > 120 && (
+                            <span className="text-xs font-medium">{config.label}</span>
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" className="p-4">
+                        {renderTooltipContent(block)}
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                })}
+              </div>
+            </TooltipProvider>
           </div>
         </div>
       </Card>
-
-      <Sheet open={!!selectedBlock} onOpenChange={() => setSelectedBlock(null)}>
-        <SheetContent>
-          <SheetHeader>
-            <SheetTitle>
-              {selectedBlock && BLOCK_CONFIG[selectedBlock.type].label}
-            </SheetTitle>
-          </SheetHeader>
-          {selectedBlock && (
-            <div className="mt-6 space-y-4">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>{getTimeFromISO(selectedBlock.start)}–{getTimeFromISO(selectedBlock.end)}</span>
-                <span>•</span>
-                <span>{getDuration(selectedBlock.start, selectedBlock.end)}</span>
-              </div>
-
-              {selectedBlock.meta && (
-                <div className="space-y-3">
-                  {selectedBlock.type === 'meal' && (
-                    <>
-                      <p className="font-medium">{selectedBlock.meta.meal}</p>
-                      <p className="text-sm text-muted-foreground">~{selectedBlock.meta.kcal} kcal</p>
-                      <p className="text-xs text-muted-foreground">Source: {selectedBlock.meta.source}</p>
-                    </>
-                  )}
-                  {selectedBlock.type === 'exercise' && (
-                    <>
-                      <p className="font-medium">{selectedBlock.meta.activity}</p>
-                      <p className="text-sm text-muted-foreground">Avg HR: {selectedBlock.meta.avgHR} bpm</p>
-                      <p className="text-sm text-muted-foreground">~{selectedBlock.meta.kcal} kcal</p>
-                    </>
-                  )}
-                  {selectedBlock.type === 'sleep' && (
-                    <>
-                      <p className="text-sm text-muted-foreground">Efficiency: {selectedBlock.meta.efficiency}%</p>
-                      <p className="text-sm text-muted-foreground">HRV: {selectedBlock.meta.hrv} ms</p>
-                      {selectedBlock.meta.deepSleep && <p className="text-sm text-muted-foreground">Deep Sleep: {selectedBlock.meta.deepSleep}</p>}
-                      {selectedBlock.meta.remSleep && <p className="text-sm text-muted-foreground">REM Sleep: {selectedBlock.meta.remSleep}</p>}
-                    </>
-                  )}
-                  {selectedBlock.type === 'work' && (
-                    <>
-                      {selectedBlock.meta.posture && <p className="text-sm text-muted-foreground">Posture: {selectedBlock.meta.posture}</p>}
-                      {selectedBlock.meta.standTime && <p className="text-sm text-muted-foreground">Stand Time: {selectedBlock.meta.standTime}</p>}
-                      {selectedBlock.meta.focusScore && <p className="text-sm text-muted-foreground">Focus Score: {selectedBlock.meta.focusScore}</p>}
-                      {selectedBlock.meta.scrollTime && <p className="text-sm text-muted-foreground">Social Media: {selectedBlock.meta.scrollTime}</p>}
-                    </>
-                  )}
-                  {selectedBlock.type === 'leisure' && (
-                    <>
-                      {selectedBlock.meta.activities && <p className="text-sm">{selectedBlock.meta.activities}</p>}
-                      {selectedBlock.meta.screenTime && <p className="text-sm text-muted-foreground">Screen Time: {selectedBlock.meta.screenTime}</p>}
-                      {selectedBlock.meta.steps && <p className="text-sm text-muted-foreground">Steps: {selectedBlock.meta.steps}</p>}
-                      {selectedBlock.meta.transport && <p className="text-sm text-muted-foreground">Transport: {selectedBlock.meta.transport}</p>}
-                      {selectedBlock.meta.activity && <p className="text-sm">{selectedBlock.meta.activity}</p>}
-                      {selectedBlock.meta.context && <p className="text-sm text-muted-foreground">{selectedBlock.meta.context}</p>}
-                    </>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-        </SheetContent>
-      </Sheet>
-    </>
   );
 };
