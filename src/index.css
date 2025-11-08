@@ -19,11 +19,15 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 4%;
 
-    --primary: 200 100% 45%;
+    --primary: 220 80% 65%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 4%;
+
+    --health-good: 142 76% 47%;
+    --health-medium: 48 100% 50%;
+    --health-bad: 4 90% 60%;
 
     --muted: 0 0% 94%;
     --muted-foreground: 0 0% 4% / 0.6;
@@ -62,11 +66,15 @@ All colors MUST be HSL.
     --popover: 0 0% 8%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 200 100% 55%;
+    --primary: 220 80% 65%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 12%;
     --secondary-foreground: 0 0% 98%;
+
+    --health-good: 142 76% 47%;
+    --health-medium: 48 100% 50%;
+    --health-bad: 4 90% 60%;
 
     --muted: 0 0% 12%;
     --muted-foreground: 0 0% 98% / 0.6;

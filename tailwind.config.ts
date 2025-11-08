@@ -52,6 +52,11 @@ export default {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
+        health: {
+          good: "hsl(var(--health-good))",
+          medium: "hsl(var(--health-medium))",
+          bad: "hsl(var(--health-bad))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
