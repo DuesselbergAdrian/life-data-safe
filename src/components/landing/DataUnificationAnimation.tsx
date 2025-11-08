@@ -32,16 +32,16 @@ export const DataUnificationAnimation = () => {
       id: 'oura', 
       icon: Circle, 
       color: 'bg-blue-600',
-      startX: 10,
-      startY: 15,
+      startX: 8,
+      startY: 10,
       name: 'Oura'
     },
     { 
       id: 'excel', 
       icon: FileSpreadsheet, 
       color: 'bg-green-600',
-      startX: 90,
-      startY: 15,
+      startX: 92,
+      startY: 10,
       name: 'Excel'
     },
     { 
@@ -49,23 +49,23 @@ export const DataUnificationAnimation = () => {
       icon: Heart, 
       color: 'bg-red-500',
       startX: 5,
-      startY: 85,
+      startY: 50,
       name: 'Apple Health'
     },
     { 
       id: 'whoop', 
       icon: Activity, 
       color: 'bg-gray-900',
-      startX: 15,
-      startY: 95,
+      startX: 8,
+      startY: 90,
       name: 'Whoop'
     },
     { 
       id: 'strava', 
       icon: TrendingUp, 
       color: 'bg-orange-500',
-      startX: 95,
-      startY: 85,
+      startX: 92,
+      startY: 90,
       name: 'Strava'
     },
   ];
