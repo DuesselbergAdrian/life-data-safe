@@ -118,7 +118,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Activity className="h-5 w-5 text-primary" />
+            <Activity className="h-5 w-5 text-muted-foreground" />
             <CardTitle>Activity</CardTitle>
           </div>
           <CardDescription>Daily steps and active minutes</CardDescription>
@@ -169,7 +169,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Heart className="h-5 w-5 text-destructive" />
+            <Heart className="h-5 w-5 text-muted-foreground" />
             <CardTitle>Heart Health</CardTitle>
           </div>
           <CardDescription>Resting heart rate and HRV</CardDescription>
@@ -211,7 +211,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Moon className="h-5 w-5 text-accent" />
+              <Moon className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Sleep</CardTitle>
             </div>
             <CardDescription>Sleep score and duration</CardDescription>
@@ -239,7 +239,7 @@ const TrendsTab = ({ userId }: TrendsTabProps) => {
         <Card>
           <CardHeader>
             <div className="flex items-center gap-2">
-              <Zap className="h-5 w-5 text-warning" />
+              <Zap className="h-5 w-5 text-muted-foreground" />
               <CardTitle>Stress Level</CardTitle>
             </div>
             <CardDescription>Daily stress tracking</CardDescription>
