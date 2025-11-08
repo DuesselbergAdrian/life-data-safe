@@ -1,6 +1,6 @@
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Shield, CheckCircle, Building2, Users, DollarSign, Sparkles, ChevronDown, ChevronUp, TrendingUp } from "lucide-react";
+import { Shield, CheckCircle, Building2, Users, DollarSign, Sparkles, ChevronDown, ChevronUp, TrendingUp, UserCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -46,6 +46,10 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(new Set());
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [loading, setLoading] = useState(true);
+  const [socialConsents, setSocialConsents] = useState({
+    share_communities: false,
+    share_private_circle: false,
+  });
   const { toast } = useToast();
 
   useEffect(() => {
@@ -53,6 +57,7 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
       loadProjects();
       loadUserConsents();
       loadAuditLogs();
+      loadSocialConsents();
     }
   }, [userId]);
 
@@ -90,12 +95,61 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
       .from("audit_logs")
       .select("*")
       .eq("user_id", userId)
-      .in("scope", ["research", "data_export"])
+      .in("scope", ["research", "data_export", "social_sharing"])
       .order("created_at", { ascending: false })
       .limit(5);
 
     if (!error && data) {
       setAuditLogs(data);
+    }
+  };
+
+  const loadSocialConsents = async () => {
+    if (!userId) return;
+    
+    const { data, error } = await supabase
+      .from("consents")
+      .select("share_communities, share_private_circle")
+      .eq("user_id", userId)
+      .single();
+
+    if (!error && data) {
+      setSocialConsents({
+        share_communities: data.share_communities,
+        share_private_circle: data.share_private_circle,
+      });
+    }
+  };
+
+  const handleToggleSocialConsent = async (field: 'share_communities' | 'share_private_circle') => {
+    if (!userId) return;
+    
+    const newValue = !socialConsents[field];
+    
+    const { error } = await supabase
+      .from("consents")
+      .update({ [field]: newValue })
+      .eq("user_id", userId);
+
+    if (!error) {
+      setSocialConsents(prev => ({ ...prev, [field]: newValue }));
+      
+      await supabase.from("audit_logs").insert({
+        user_id: userId,
+        action: newValue ? "SOCIAL_SHARING_ENABLE" : "SOCIAL_SHARING_DISABLE",
+        scope: "social_sharing",
+        details: { 
+          sharing_type: field === 'share_communities' ? 'communities' : 'inner_circle',
+          enabled: newValue
+        }
+      });
+      
+      loadAuditLogs();
+      
+      toast({
+        title: newValue ? "Sharing enabled" : "Sharing disabled",
+        description: `Your data ${newValue ? 'is now' : 'is no longer'} shared with ${field === 'share_communities' ? 'communities' : 'your inner circle'}`,
+      });
     }
   };
 
@@ -221,6 +275,65 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
 
   return (
     <div className="space-y-6">
+      <Card className="glass border-primary/20">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <UserCircle className="h-5 w-5 text-primary" />
+            <CardTitle className="text-lg font-semibold">Social Graph Data Sharing</CardTitle>
+          </div>
+          <CardDescription>Control who can see your health data in social features</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <Users className="h-4 w-4 text-primary" />
+                  <h4 className="font-medium text-sm">Communities</h4>
+                  {socialConsents.share_communities && (
+                    <Badge variant="default" className="flex items-center gap-1 text-xs">
+                      <CheckCircle className="h-3 w-3" />
+                      Enabled
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Share your health metrics with communities you join for collective challenges and leaderboards
+                </p>
+              </div>
+              <Switch 
+                checked={socialConsents.share_communities}
+                onCheckedChange={() => handleToggleSocialConsent('share_communities')}
+              />
+            </div>
+          </div>
+
+          <div className="p-4 rounded-lg border border-border hover:border-primary/30 transition-colors">
+            <div className="flex items-start justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <UserCircle className="h-4 w-4 text-primary" />
+                  <h4 className="font-medium text-sm">Inner Circle</h4>
+                  {socialConsents.share_private_circle && (
+                    <Badge variant="default" className="flex items-center gap-1 text-xs">
+                      <CheckCircle className="h-3 w-3" />
+                      Enabled
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Share your health data with your private circle (family and close friends)
+                </p>
+              </div>
+              <Switch 
+                checked={socialConsents.share_private_circle}
+                onCheckedChange={() => handleToggleSocialConsent('share_private_circle')}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="p-4">
           <div className="flex items-center space-x-3">
@@ -393,11 +506,14 @@ export const ConsentsManager = ({ userId }: ConsentsManagerProps) => {
                 <div>
                   <p className="font-medium text-sm">
                     {log.action === "CONSENT_GRANT" ? "Consent granted" : 
-                     log.action === "CONSENT_REVOKE" ? "Consent revoked" : 
+                     log.action === "CONSENT_REVOKE" ? "Consent revoked" :
+                     log.action === "SOCIAL_SHARING_ENABLE" ? "Social sharing enabled" :
+                     log.action === "SOCIAL_SHARING_DISABLE" ? "Social sharing disabled" :
                      log.action}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {log.details?.project_name || log.scope}
+                    {log.details?.project_name || 
+                     (log.details?.sharing_type ? `${log.details.sharing_type.replace('_', ' ')}` : log.scope)}
                   </p>
                 </div>
                 <div className="text-right">
