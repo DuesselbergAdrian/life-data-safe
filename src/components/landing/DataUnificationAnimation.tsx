@@ -117,38 +117,6 @@ export const DataUnificationAnimation = () => {
           );
         })}
 
-        {/* Center Health Vault Logo */}
-        <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{
-            opacity: Math.min(1, scrollProgress * 2),
-            transform: `translate(-50%, -50%) scale(${0.75 + scrollProgress * 0.25})`,
-          }}
-        >
-          <div className="relative">
-            <div 
-              className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150"
-              style={{ opacity: scrollProgress }}
-            />
-            <div className="relative bg-background border-2 border-foreground rounded-full px-8 md:px-12 py-4 md:py-6 shadow-2xl">
-              <h2 className="text-2xl md:text-4xl font-bold whitespace-nowrap">Health Vault</h2>
-            </div>
-          </div>
-        </div>
-
-        {/* Subtitle after animation */}
-        <div 
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center px-4"
-          style={{
-            opacity: Math.max(0, (scrollProgress - 0.3) * 2),
-            transform: `translate(-50%, ${(1 - scrollProgress) * 30}px)`,
-          }}
-        >
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl">
-            All your health data, unified in one secure place
-          </p>
-        </div>
-
         {/* Connection lines effect */}
         {scrollProgress > 0.5 && (
           <div className="absolute inset-0 pointer-events-none">
