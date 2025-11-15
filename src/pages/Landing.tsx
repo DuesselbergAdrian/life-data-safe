@@ -1,10 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Heart, Activity, Moon, Zap, Shield, Lock } from "lucide-react";
-import { StatCard } from "@/components/StatCard";
-import { ActivityItem } from "@/components/ActivityItem";
-import heroImage from "@/assets/hero-health-unified.jpg";
+import { Heart, Shield, Lock } from "lucide-react";
 import { DataUnificationAnimation } from "@/components/landing/DataUnificationAnimation";
 
 const Landing = () => {
@@ -54,148 +51,73 @@ const Landing = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-6 pb-16">
-        <div className="max-w-3xl mx-auto text-center space-y-6">
+      <section className="container mx-auto px-6 pb-24">
+        <div className="max-w-3xl mx-auto text-center space-y-8">
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button size="lg" className="px-8" asChild>
-              <Link to="/onboarding">Sync data</Link>
+              <Link to="/onboarding">Get started</Link>
             </Button>
-            <Button size="lg" variant="ghost" asChild>
-              <Link to="/auth">Explore demo</Link>
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/auth">View demo</Link>
             </Button>
           </div>
           <p className="text-xl text-muted-foreground leading-relaxed max-w-2xl mx-auto">
-            Own your data. See it live. Sync from the devices you already use.
+            Take control of your health data. Unified, secure, and entirely yours.
           </p>
         </div>
       </section>
 
       {/* Problem & Vision Section */}
-      <section className="container mx-auto px-6 py-20 bg-muted/30">
-        <div className="max-w-5xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-destructive/10 text-destructive text-sm font-medium mb-2">
-                <span className="h-2 w-2 rounded-full bg-destructive"></span>
-                Problem
+      <section className="container mx-auto px-6 py-32 bg-gradient-to-b from-muted/30 to-background">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-16">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-destructive/10 text-destructive text-sm font-medium">
+                <span className="h-2 w-2 rounded-full bg-destructive animate-pulse"></span>
+                The Problem
               </div>
-              <h2 className="text-3xl font-bold">Data locked in silos</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Every day, Europeans generate millions of data points — from clinics, wearables, and daily life.
+              <h2 className="text-4xl md:text-5xl font-bold leading-tight">Data locked in silos</h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Every day, Europeans generate millions of health data points—from clinics, wearables, and daily life. 
                 But that data is locked away in silos, disconnected from the people who created it.
               </p>
             </div>
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-2">
-                <Lock className="h-3 w-3" />
-                Vision
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                <Shield className="h-4 w-4" />
+                Our Vision
               </div>
-              <h2 className="text-3xl font-bold">Your personal health vault</h2>
-              <p className="text-muted-foreground leading-relaxed">
-                Health Vault is Europe's platform for storing and managing personal health data — a personal, encrypted vault where your medical, wearable, and lifestyle data finally live together under your control.
+              <h2 className="text-4xl md:text-5xl font-bold leading-tight">Your personal health vault</h2>
+              <p className="text-lg text-muted-foreground leading-relaxed">
+                Health Vault is Europe's platform for storing and managing personal health data—a personal, encrypted vault 
+                where your medical, wearable, and lifestyle data finally live together under your control.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Key Stats Demo */}
-      <section className="container mx-auto px-6 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-6xl mx-auto">
-          <StatCard 
-            title="Today" 
-            value="8,432" 
-            unit="steps"
-            delta={12}
-            sparklineData={[65, 72, 68, 80, 75, 85, 90]}
-          />
-          <StatCard 
-            title="Sleep" 
-            value="7.2" 
-            unit="hours"
-            delta={-5}
-            sparklineData={[7, 6.5, 7.2, 8, 7.5, 6.8, 7.2]}
-          />
-          <StatCard 
-            title="Readiness" 
-            value="87" 
-            unit="%"
-            delta={3}
-            sparklineData={[80, 82, 85, 87, 84, 86, 87]}
-          />
-          <StatCard 
-            title="Heart" 
-            value="62" 
-            unit="bpm"
-            sparklineData={[65, 63, 61, 62, 64, 63, 62]}
-          />
-        </div>
-      </section>
-
-      {/* Live Stream */}
-      <section className="container mx-auto px-6 py-16">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold">Recent updates</h2>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="text-xs">All</Button>
-              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">Apple</Button>
-              <Button variant="ghost" size="sm" className="text-xs text-muted-foreground">Oura</Button>
+      {/* Mission Statement */}
+      <section className="container mx-auto px-6 py-32">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <h2 className="text-3xl md:text-4xl font-bold">Built on European values</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="space-y-3">
+              <Lock className="h-8 w-8 text-primary mx-auto" />
+              <h3 className="text-xl font-semibold">Privacy-first</h3>
+              <p className="text-muted-foreground">Your data stays yours. Encrypted, secure, and under your complete control.</p>
+            </div>
+            <div className="space-y-3">
+              <Shield className="h-8 w-8 text-primary mx-auto" />
+              <h3 className="text-xl font-semibold">GDPR compliant</h3>
+              <p className="text-muted-foreground">Built for Europe, respecting the highest standards of data protection.</p>
+            </div>
+            <div className="space-y-3">
+              <Heart className="h-8 w-8 text-primary mx-auto" />
+              <h3 className="text-xl font-semibold">You decide</h3>
+              <p className="text-muted-foreground">Choose what to share, with whom, and for how long. Always reversible.</p>
             </div>
           </div>
-          <Card className="p-6">
-            <ActivityItem 
-              source="Oura Ring" 
-              action="Sleep synced" 
-              time="06:42"
-              icon={<Moon className="h-8 w-8 p-2 rounded-full bg-primary/10 text-primary" />}
-            />
-            <ActivityItem 
-              source="Apple Watch" 
-              action="Activity recorded" 
-              time="08:15"
-              icon={<Activity className="h-8 w-8 p-2 rounded-full bg-primary/10 text-primary" />}
-            />
-            <ActivityItem 
-              source="Apple Health" 
-              action="Heart rate updated" 
-              time="09:30"
-              icon={<Heart className="h-8 w-8 p-2 rounded-full bg-primary/10 text-primary" />}
-            />
-          </Card>
-        </div>
-      </section>
-
-      {/* Data Tiles */}
-      <section className="container mx-auto px-6 py-16">
-        <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-6">
-          <Card className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Sleep</h3>
-              <Moon className="h-5 w-5 text-primary" />
-            </div>
-            <div className="h-32 bg-muted rounded-lg flex items-center justify-center text-sm text-muted-foreground">
-              7-day trend chart
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">Oura</span>
-              <Button variant="link" size="sm" className="text-xs">View details</Button>
-            </div>
-          </Card>
-
-          <Card className="p-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Activity</h3>
-              <Zap className="h-5 w-5 text-primary" />
-            </div>
-            <div className="h-32 bg-muted rounded-lg flex items-center justify-center text-sm text-muted-foreground">
-              7-day trend chart
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary">Apple Watch</span>
-              <Button variant="link" size="sm" className="text-xs">View details</Button>
-            </div>
-          </Card>
         </div>
       </section>
 
